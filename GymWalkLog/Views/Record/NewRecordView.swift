@@ -336,7 +336,7 @@ struct NewRecordView: View {
 
     private var saveButton: some View {
         Button { saveRecord() } label: {
-            Text("保存する")
+            Text(isAtFreeLimit ? "Proで記録を続ける" : "保存する")
                 .font(.headline).foregroundColor(.white)
                 .frame(maxWidth: .infinity).padding(.vertical, 16)
                 .background(theme.primaryColor)
@@ -352,7 +352,7 @@ struct NewRecordView: View {
             Image(systemName: "leaf.fill")
                 .font(.system(size: 28)).foregroundColor(theme.primaryColor)
             Text("ここまで続けましたね！").font(.headline)
-            Text("ジム 30回 達成！古い記録もずっと残しませんか？")
+            Text("無料版は30件まで記録できます。Proでこの先も続けましょう。")
                 .font(.subheadline).foregroundColor(.secondary).multilineTextAlignment(.center)
             Button { showProPrompt = true } label: {
                 Text("Proにする（買い切り \(purchaseManager.priceString)）")
@@ -422,6 +422,11 @@ struct NewRecordView: View {
 
     private func saveRecord() {
         validationMessage = nil
+        guard !isAtFreeLimit else {
+            showProPrompt = true
+            validationMessage = "31件目以降の記録にはProが必要です。"
+            return
+        }
         guard totalDurationSeconds > 0 else {
             validationMessage = "時間を入力してください。"
             return

@@ -64,10 +64,10 @@ struct RecordListView: View {
                         Image(systemName: "lock.fill")
                             .foregroundColor(theme.primaryColor)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("古い記録も残すにはProへ")
+                            Text("31件目以降の記録はProへ")
                                 .font(.subheadline)
                                 .fontWeight(.medium)
-                            Text("Proにするとすべての記録を保存できます")
+                            Text("記録一覧は直近30件まで表示しています")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }

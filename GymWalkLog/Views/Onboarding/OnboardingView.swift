@@ -29,7 +29,7 @@ struct OnboardingView: View {
         OnboardingPage(
             icon: "leaf.fill",
             title: "自分のペースで始めよう",
-            body: "最初の30件分は無料で使えます。\nそれ以降も記録したくなったら\n買い切り（\(purchaseManager.priceString)）のProにアップグレード。\nサブスクリプションはありません。",
+            body: "最初の30件まで無料で記録できます。\nもっと続けたくなったら\n買い切り（\(purchaseManager.priceString)）のProにアップグレード。\nサブスクリプションはありません。",
             isLast: true
         ),
     ]}

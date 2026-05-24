@@ -39,7 +39,7 @@ struct StatsView: View {
                     .foregroundColor(theme.primaryColor.opacity(0.5))
                 Text("統計グラフはPro機能です")
                     .font(.headline)
-                Text("月別・年別の振り返りグラフが使えます")
+                Text("週・月・年の振り返りグラフが使えます")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
@@ -99,7 +99,7 @@ struct StatsView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                 )
 
-            Text("※Pro購入で過去の月も閲覧できます")
+            Text("※Pro購入で週・月・年のグラフを閲覧できます")
                 .font(.caption2)
                 .foregroundColor(.secondary)
         }
@@ -123,7 +123,7 @@ struct StatsView: View {
         VStack(spacing: 16) {
             periodSelector
 
-            monthNavigator
+            periodNavigator
 
             summaryCards
 
@@ -146,10 +146,10 @@ struct StatsView: View {
         .padding(.top, 8)
     }
 
-    private var monthNavigator: some View {
+    private var periodNavigator: some View {
         HStack {
             Button {
-                currentDate = calendar.date(byAdding: .month, value: -1, to: currentDate)!
+                currentDate = previousPeriodDate()
             } label: {
                 Image(systemName: "chevron.left")
                     .foregroundColor(theme.primaryColor)
@@ -157,26 +157,36 @@ struct StatsView: View {
 
             Spacer()
 
-            let year = calendar.component(.year, from: currentDate)
-            let month = calendar.component(.month, from: currentDate)
-            Text("\(year)年\(month)月")
+            Text(periodTitle)
                 .font(.headline)
 
             Spacer()
 
             Button {
-                let next = calendar.date(byAdding: .month, value: 1, to: currentDate)!
-                if next <= Date() {
-                    currentDate = next
-                }
+                if let next = nextPeriodDate(), next <= Date() { currentDate = next }
             } label: {
                 Image(systemName: "chevron.right")
-                    .foregroundColor(theme.primaryColor)
+                    .foregroundColor(nextPeriodDate().map { $0 <= Date() } == true ? theme.primaryColor : .secondary.opacity(0.4))
             }
+            .disabled(nextPeriodDate().map { $0 <= Date() } != true)
         }
         .padding(12)
         .background(theme.cardColor)
         .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+
+    private var periodTitle: String {
+        switch selectedPeriod {
+        case 0:
+            let interval = weekInterval(containing: currentDate)
+            return "\(shortDateLabel(interval.start)) 〜 \(shortDateLabel(calendar.date(byAdding: .day, value: -1, to: interval.end)!))"
+        case 2:
+            return "\(calendar.component(.year, from: currentDate))年"
+        default:
+            let year = calendar.component(.year, from: currentDate)
+            let month = calendar.component(.month, from: currentDate)
+            return "\(year)年\(month)月"
+        }
     }
 
     private var summaryCards: some View {
@@ -223,7 +233,7 @@ struct StatsView: View {
 
             Chart(periodRecords()) { record in
                 BarMark(
-                    x: .value("日", record.date, unit: .day),
+                    x: .value("日", record.date, unit: selectedPeriod == 2 ? .month : .day),
                     y: .value("距離", record.distanceKm)
                 )
                 .foregroundStyle(theme.primaryColor.gradient)
@@ -231,10 +241,10 @@ struct StatsView: View {
             }
             .frame(height: 160)
             .chartXAxis {
-                AxisMarks(values: .stride(by: .day, count: 5)) { value in
+                AxisMarks(values: axisMarks) { value in
                     if let date = value.as(Date.self) {
                         AxisValueLabel {
-                            Text(dayLabel(date))
+                            Text(axisLabel(date))
                                 .font(.caption2)
                         }
                     }
@@ -285,29 +295,58 @@ struct StatsView: View {
     }
 
     private func periodRecords() -> [WorkoutRecord] {
-        let start: Date
-        switch selectedPeriod {
-        case 0:
-            start = calendar.date(byAdding: .day, value: -7, to: currentDate)!
-        case 2:
-            let comps = calendar.dateComponents([.year], from: currentDate)
-            start = calendar.date(from: comps)!
-        default:
-            let comps = calendar.dateComponents([.year, .month], from: currentDate)
-            start = calendar.date(from: comps)!
-        }
-
-        let end: Date
-        switch selectedPeriod {
-        case 0:
-            end = calendar.date(byAdding: .day, value: 7, to: start)!
-        case 2:
-            end = calendar.date(byAdding: .year, value: 1, to: start)!
-        default:
-            end = calendar.date(byAdding: .month, value: 1, to: start)!
-        }
-
+        let start = periodStart(containing: currentDate)
+        let end = periodEnd(after: start)
         return allRecords.filter { $0.date >= start && $0.date < end }
+    }
+
+    private func previousPeriodDate() -> Date {
+        switch selectedPeriod {
+        case 0:
+            return calendar.date(byAdding: .weekOfYear, value: -1, to: currentDate)!
+        case 2:
+            return calendar.date(byAdding: .year, value: -1, to: currentDate)!
+        default:
+            return calendar.date(byAdding: .month, value: -1, to: currentDate)!
+        }
+    }
+
+    private func nextPeriodDate() -> Date? {
+        switch selectedPeriod {
+        case 0:
+            return calendar.date(byAdding: .weekOfYear, value: 1, to: currentDate)
+        case 2:
+            return calendar.date(byAdding: .year, value: 1, to: currentDate)
+        default:
+            return calendar.date(byAdding: .month, value: 1, to: currentDate)
+        }
+    }
+
+    private func periodStart(containing date: Date) -> Date {
+        switch selectedPeriod {
+        case 0:
+            return weekInterval(containing: date).start
+        case 2:
+            return calendar.date(from: calendar.dateComponents([.year], from: date))!
+        default:
+            return calendar.date(from: calendar.dateComponents([.year, .month], from: date))!
+        }
+    }
+
+    private func periodEnd(after start: Date) -> Date {
+        switch selectedPeriod {
+        case 0:
+            return calendar.date(byAdding: .weekOfYear, value: 1, to: start)!
+        case 2:
+            return calendar.date(byAdding: .year, value: 1, to: start)!
+        default:
+            return calendar.date(byAdding: .month, value: 1, to: start)!
+        }
+    }
+
+    private func weekInterval(containing date: Date) -> DateInterval {
+        calendar.dateInterval(of: .weekOfYear, for: date)
+            ?? DateInterval(start: calendar.startOfDay(for: date), duration: 7 * 24 * 60 * 60)
     }
 
     private func currentStreak() -> Int {
@@ -342,7 +381,18 @@ struct StatsView: View {
         return String(format: "%d:%02d", h, m)
     }
 
-    private func dayLabel(_ date: Date) -> String {
+    private var axisMarks: AxisMarkValues {
+        selectedPeriod == 2 ? .stride(by: .month, count: 2) : .stride(by: .day, count: selectedPeriod == 0 ? 1 : 5)
+    }
+
+    private func axisLabel(_ date: Date) -> String {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "ja_JP")
+        f.dateFormat = selectedPeriod == 2 ? "M月" : "M/d"
+        return f.string(from: date)
+    }
+
+    private func shortDateLabel(_ date: Date) -> String {
         let f = DateFormatter()
         f.locale = Locale(identifier: "ja_JP")
         f.dateFormat = "M/d"

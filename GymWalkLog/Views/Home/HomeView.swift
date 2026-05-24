@@ -329,10 +329,10 @@ struct HomeView: View {
                 Image(systemName: "leaf.fill")
                     .foregroundColor(theme.primaryColor)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("過去の記録をずっと残しませんか？")
+                    Text("全履歴を表示しませんか？")
                         .font(.subheadline)
                         .fontWeight(.medium)
-                    Text("Proにすると全履歴を永続保存できます")
+                    Text("Proにするとすべての記録を振り返れます")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }

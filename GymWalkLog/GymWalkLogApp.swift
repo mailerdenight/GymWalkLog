@@ -5,17 +5,18 @@ import SwiftData
 struct GymWalkLogApp: App {
     @StateObject private var appSettings = AppSettings()
     @StateObject private var purchaseManager: PurchaseManager
+    @State private var modelContainer: ModelContainer
 
     init() {
         let settings = AppSettings()
         _appSettings = StateObject(wrappedValue: settings)
         _purchaseManager = StateObject(wrappedValue: PurchaseManager(appSettings: settings))
+        _modelContainer = State(initialValue: Self.makeModelContainer(isPro: settings.isPro))
         _ = settings.firstLaunchDate
     }
 
-    var sharedModelContainer: ModelContainer = {
+    private static func makeModelContainer(isPro: Bool) -> ModelContainer {
         let schema = Schema([WorkoutRecord.self])
-        let isPro = UserDefaults.standard.bool(forKey: "isPro")
         let config: ModelConfiguration
         if isPro {
             config = ModelConfiguration(
@@ -33,14 +34,18 @@ struct GymWalkLogApp: App {
             let fallback = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
             return try! ModelContainer(for: schema, configurations: [fallback])
         }
-    }()
+    }
 
     var body: some Scene {
         WindowGroup {
             MainTabView()
                 .environmentObject(appSettings)
                 .environmentObject(purchaseManager)
-                .modelContainer(sharedModelContainer)
+                .modelContainer(modelContainer)
+                .id(appSettings.isPro)
+                .onChange(of: appSettings.isPro) { _, isPro in
+                    modelContainer = Self.makeModelContainer(isPro: isPro)
+                }
         }
     }
 }
