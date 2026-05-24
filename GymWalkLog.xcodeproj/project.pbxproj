@@ -1,0 +1,584 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		200000000000000000000101 /* GymWalkLogApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000001 /* GymWalkLogApp.swift */; };
+		200000000000000000000102 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000002 /* MainTabView.swift */; };
+		200000000000000000000103 /* WorkoutRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000003 /* WorkoutRecord.swift */; };
+		200000000000000000000104 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000004 /* AppSettings.swift */; };
+		200000000000000000000105 /* PurchaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000005 /* PurchaseManager.swift */; };
+		200000000000000000000106 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000006 /* NotificationManager.swift */; };
+		200000000000000000000107 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000007 /* HomeView.swift */; };
+		200000000000000000000108 /* MiniCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000008 /* MiniCalendarView.swift */; };
+		200000000000000000000109 /* NewRecordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000009 /* NewRecordView.swift */; };
+		20000000000000000000010A /* RecordDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000A /* RecordDetailView.swift */; };
+		20000000000000000000010B /* RecordListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000B /* RecordListView.swift */; };
+		20000000000000000000010C /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000C /* StatsView.swift */; };
+		20000000000000000000010D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000D /* SettingsView.swift */; };
+		20000000000000000000010E /* ProUpgradeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000E /* ProUpgradeView.swift */; };
+		20000000000000000000010F /* ColorTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000F /* ColorTheme.swift */; };
+		200000000000000000000110 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000010 /* Assets.xcassets */; };
+		200000000000000000000111 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000011 /* Preview Assets.xcassets */; };
+		200000000000000000000112 /* WidgetDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000013 /* WidgetDataManager.swift */; };
+		200000000000000000000113 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000014 /* CameraView.swift */; };
+		200000000000000000000116 /* PhotoOCRManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000017 /* PhotoOCRManager.swift */; };
+		200000000000000000000117 /* TreadmillProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000018 /* TreadmillProfile.swift */; };
+		200000000000000000000118 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000019 /* OnboardingView.swift */; };
+		200000000000000000000114 /* CalendarFullView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000015 /* CalendarFullView.swift */; };
+		200000000000000000000115 /* AlbumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000016 /* AlbumView.swift */; };
+		300000000000000000000101 /* GymWalkLogWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300000000000000000000001 /* GymWalkLogWidget.swift */; };
+		300000000000000000000102 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 300000000000000000000002 /* Assets.xcassets */; };
+		400000000000000000000101 /* GymWalkLogWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 300000000000000000000003 /* GymWalkLogWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		400000000000000000000050 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 200000000000000000000070 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 300000000000000000000040;
+			remoteInfo = "GymWalkLog Widget";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		400000000000000000000070 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				400000000000000000000101 /* GymWalkLogWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+			VALIDATE_PRODUCT = NO;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		200000000000000000000001 /* GymWalkLogApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GymWalkLogApp.swift; sourceTree = "<group>"; };
+		200000000000000000000002 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		200000000000000000000003 /* WorkoutRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/WorkoutRecord.swift; sourceTree = "<group>"; };
+		200000000000000000000004 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/AppSettings.swift; sourceTree = "<group>"; };
+		200000000000000000000005 /* PurchaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/PurchaseManager.swift; sourceTree = "<group>"; };
+		200000000000000000000006 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/NotificationManager.swift; sourceTree = "<group>"; };
+		200000000000000000000007 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Home/HomeView.swift; sourceTree = "<group>"; };
+		200000000000000000000008 /* MiniCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Home/MiniCalendarView.swift; sourceTree = "<group>"; };
+		200000000000000000000009 /* NewRecordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Record/NewRecordView.swift; sourceTree = "<group>"; };
+		20000000000000000000000A /* RecordDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Record/RecordDetailView.swift; sourceTree = "<group>"; };
+		20000000000000000000000B /* RecordListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/List/RecordListView.swift; sourceTree = "<group>"; };
+		20000000000000000000000C /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Stats/StatsView.swift; sourceTree = "<group>"; };
+		20000000000000000000000D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Settings/SettingsView.swift; sourceTree = "<group>"; };
+		20000000000000000000000E /* ProUpgradeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Pro/ProUpgradeView.swift; sourceTree = "<group>"; };
+		20000000000000000000000F /* ColorTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions/ColorTheme.swift; sourceTree = "<group>"; };
+		200000000000000000000010 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		200000000000000000000011 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Content/Preview Assets.xcassets"; sourceTree = "<group>"; };
+		200000000000000000000012 /* GymWalkLog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GymWalkLog.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		200000000000000000000013 /* WidgetDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/WidgetDataManager.swift; sourceTree = "<group>"; };
+		200000000000000000000014 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Record/CameraView.swift; sourceTree = "<group>"; };
+		200000000000000000000017 /* PhotoOCRManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/PhotoOCRManager.swift; sourceTree = "<group>"; };
+		200000000000000000000018 /* TreadmillProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/TreadmillProfile.swift; sourceTree = "<group>"; };
+		200000000000000000000019 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Onboarding/OnboardingView.swift; sourceTree = "<group>"; };
+		200000000000000000000015 /* CalendarFullView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Calendar/CalendarFullView.swift; sourceTree = "<group>"; };
+		200000000000000000000016 /* AlbumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Album/AlbumView.swift; sourceTree = "<group>"; };
+		20000000000000000000001A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		20000000000000000000001B /* GymWalkLog.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GymWalkLog.entitlements; sourceTree = "<group>"; };
+		300000000000000000000001 /* GymWalkLogWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GymWalkLogWidget.swift; sourceTree = "<group>"; };
+		300000000000000000000002 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		300000000000000000000004 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		300000000000000000000005 /* GymWalkLogWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GymWalkLogWidget.entitlements; sourceTree = "<group>"; };
+		300000000000000000000003 /* GymWalkLogWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "GymWalkLogWidget.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		200000000000000000000020 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		300000000000000000000020 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		200000000000000000000030 = {
+			isa = PBXGroup;
+			children = (
+				200000000000000000000031 /* GymWalkLog */,
+				300000000000000000000031 /* GymWalkLog Widget */,
+				200000000000000000000032 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		200000000000000000000031 /* GymWalkLog */ = {
+			isa = PBXGroup;
+			children = (
+				200000000000000000000001 /* GymWalkLogApp.swift */,
+				200000000000000000000002 /* MainTabView.swift */,
+				200000000000000000000003 /* WorkoutRecord.swift */,
+				200000000000000000000004 /* AppSettings.swift */,
+				200000000000000000000005 /* PurchaseManager.swift */,
+				200000000000000000000006 /* NotificationManager.swift */,
+				200000000000000000000013 /* WidgetDataManager.swift */,
+				200000000000000000000017 /* PhotoOCRManager.swift */,
+				200000000000000000000018 /* TreadmillProfile.swift */,
+				200000000000000000000019 /* OnboardingView.swift */,
+				200000000000000000000007 /* HomeView.swift */,
+				200000000000000000000008 /* MiniCalendarView.swift */,
+				200000000000000000000009 /* NewRecordView.swift */,
+				200000000000000000000014 /* CameraView.swift */,
+				200000000000000000000015 /* CalendarFullView.swift */,
+				200000000000000000000016 /* AlbumView.swift */,
+				20000000000000000000000A /* RecordDetailView.swift */,
+				20000000000000000000000B /* RecordListView.swift */,
+				20000000000000000000000C /* StatsView.swift */,
+				20000000000000000000000D /* SettingsView.swift */,
+				20000000000000000000000E /* ProUpgradeView.swift */,
+				20000000000000000000000F /* ColorTheme.swift */,
+				20000000000000000000001A /* Info.plist */,
+				20000000000000000000001B /* GymWalkLog.entitlements */,
+				200000000000000000000010 /* Assets.xcassets */,
+				200000000000000000000011 /* Preview Assets.xcassets */,
+			);
+			path = GymWalkLog;
+			sourceTree = "<group>";
+		};
+		200000000000000000000032 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				200000000000000000000012 /* GymWalkLog.app */,
+				300000000000000000000003 /* GymWalkLogWidget.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		300000000000000000000031 /* GymWalkLog Widget */ = {
+			isa = PBXGroup;
+			children = (
+				300000000000000000000001 /* GymWalkLogWidget.swift */,
+				300000000000000000000002 /* Assets.xcassets */,
+				300000000000000000000004 /* Info.plist */,
+				300000000000000000000005 /* GymWalkLogWidget.entitlements */,
+			);
+			path = "GymWalkLog Widget";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		200000000000000000000040 /* GymWalkLog */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 200000000000000000000090 /* Build configuration list for PBXNativeTarget "GymWalkLog" */;
+			buildPhases = (
+				200000000000000000000050 /* Sources */,
+				200000000000000000000020 /* Frameworks */,
+				200000000000000000000060 /* Resources */,
+				400000000000000000000070 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				400000000000000000000060 /* PBXTargetDependency */,
+			);
+			name = GymWalkLog;
+			productName = GymWalkLog;
+			productReference = 200000000000000000000012 /* GymWalkLog.app */;
+			productType = "com.apple.product-type.application";
+		};
+		300000000000000000000040 /* GymWalkLog Widget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 300000000000000000000090 /* Build configuration list for PBXNativeTarget "GymWalkLog Widget" */;
+			buildPhases = (
+				300000000000000000000050 /* Sources */,
+				300000000000000000000020 /* Frameworks */,
+				300000000000000000000060 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "GymWalkLog Widget";
+			productName = "GymWalkLog Widget";
+			productReference = 300000000000000000000003 /* GymWalkLogWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		200000000000000000000070 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					200000000000000000000040 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					300000000000000000000040 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = 200000000000000000000080 /* Build configuration list for PBXProject "GymWalkLog" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = ja;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				ja,
+				en,
+				Base,
+			);
+			mainGroup = 200000000000000000000030;
+			productRefGroup = 200000000000000000000032 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				200000000000000000000040 /* GymWalkLog */,
+				300000000000000000000040 /* GymWalkLog Widget */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		200000000000000000000060 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				200000000000000000000110 /* Assets.xcassets in Resources */,
+				200000000000000000000111 /* Preview Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		300000000000000000000060 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				300000000000000000000102 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		200000000000000000000050 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				200000000000000000000101 /* GymWalkLogApp.swift in Sources */,
+				200000000000000000000102 /* MainTabView.swift in Sources */,
+				200000000000000000000103 /* WorkoutRecord.swift in Sources */,
+				200000000000000000000104 /* AppSettings.swift in Sources */,
+				200000000000000000000105 /* PurchaseManager.swift in Sources */,
+				200000000000000000000106 /* NotificationManager.swift in Sources */,
+				200000000000000000000112 /* WidgetDataManager.swift in Sources */,
+				200000000000000000000116 /* PhotoOCRManager.swift in Sources */,
+				200000000000000000000117 /* TreadmillProfile.swift in Sources */,
+				200000000000000000000118 /* OnboardingView.swift in Sources */,
+				200000000000000000000113 /* CameraView.swift in Sources */,
+				200000000000000000000114 /* CalendarFullView.swift in Sources */,
+				200000000000000000000115 /* AlbumView.swift in Sources */,
+				200000000000000000000107 /* HomeView.swift in Sources */,
+				200000000000000000000108 /* MiniCalendarView.swift in Sources */,
+				200000000000000000000109 /* NewRecordView.swift in Sources */,
+				20000000000000000000010A /* RecordDetailView.swift in Sources */,
+				20000000000000000000010B /* RecordListView.swift in Sources */,
+				20000000000000000000010C /* StatsView.swift in Sources */,
+				20000000000000000000010D /* SettingsView.swift in Sources */,
+				20000000000000000000010E /* ProUpgradeView.swift in Sources */,
+				20000000000000000000010F /* ColorTheme.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		300000000000000000000050 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				300000000000000000000101 /* GymWalkLogWidget.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		400000000000000000000060 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 300000000000000000000040 /* GymWalkLog Widget */;
+			targetProxy = 400000000000000000000050 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		200000000000000000000081 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		200000000000000000000082 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		200000000000000000000091 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+					ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+					ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+					CODE_SIGN_STYLE = Automatic;
+					CODE_SIGN_ENTITLEMENTS = GymWalkLog/GymWalkLog.entitlements;
+					CURRENT_PROJECT_VERSION = 1;
+					DEVELOPMENT_TEAM = "";
+					VALIDATE_WORKSPACE = NO;
+					GENERATE_INFOPLIST_FILE = NO;
+					INFOPLIST_FILE = GymWalkLog/Info.plist;
+					INFOPLIST_KEY_CFBundleDisplayName = "\U30b8\U30e0\U6b69\U8d70\U30ed\U30b0";
+				INFOPLIST_KEY_NSCameraUsageDescription = "\U30c8\U30ec\U30c3\U30c9\U30df\U30eb\U306e\U753b\U9762\U3092\U64ae\U5f71\U3059\U308b\U305f\U3081\U306b\U4f7f\U7528\U3057\U307e\U3059\U3002";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "\U30c8\U30ec\U30c3\U30c9\U30df\U30eb\U306e\U5199\U771f\U3092\U8a18\U9332\U306b\U8ffd\U52a0\U3059\U308b\U305f\U3081\U306b\U4f7f\U7528\U3057\U307e\U3059\U3002";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gymwalklog.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		200000000000000000000092 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+					ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+					ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+					CODE_SIGN_STYLE = Automatic;
+					CODE_SIGN_ENTITLEMENTS = GymWalkLog/GymWalkLog.entitlements;
+					CURRENT_PROJECT_VERSION = 1;
+					DEVELOPMENT_TEAM = "";
+					GENERATE_INFOPLIST_FILE = NO;
+					INFOPLIST_FILE = GymWalkLog/Info.plist;
+					INFOPLIST_KEY_CFBundleDisplayName = "\U30b8\U30e0\U6b69\U8d70\U30ed\U30b0";
+				INFOPLIST_KEY_NSCameraUsageDescription = "\U30c8\U30ec\U30c3\U30c9\U30df\U30eb\U306e\U753b\U9762\U3092\U64ae\U5f71\U3059\U308b\U305f\U3081\U306b\U4f7f\U7528\U3057\U307e\U3059\U3002";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "\U30c8\U30ec\U30c3\U30c9\U30df\U30eb\U306e\U5199\U771f\U3092\U8a18\U9332\U306b\U8ffd\U52a0\U3059\U308b\U305f\U3081\U306b\U4f7f\U7528\U3057\U307e\U3059\U3002";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gymwalklog.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		300000000000000000000091 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+					ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+					CODE_SIGN_STYLE = Automatic;
+					CODE_SIGN_ENTITLEMENTS = "GymWalkLog Widget/GymWalkLogWidget.entitlements";
+					CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "GymWalkLog Widget/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gymwalklog.app.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		300000000000000000000092 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+					ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+					CODE_SIGN_STYLE = Automatic;
+					CODE_SIGN_ENTITLEMENTS = "GymWalkLog Widget/GymWalkLogWidget.entitlements";
+					CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "GymWalkLog Widget/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.gymwalklog.app.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		200000000000000000000080 /* Build configuration list for PBXProject "GymWalkLog" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				200000000000000000000081 /* Debug */,
+				200000000000000000000082 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		200000000000000000000090 /* Build configuration list for PBXNativeTarget "GymWalkLog" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				200000000000000000000091 /* Debug */,
+				200000000000000000000092 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		300000000000000000000090 /* Build configuration list for PBXNativeTarget "GymWalkLog Widget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				300000000000000000000091 /* Debug */,
+				300000000000000000000092 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 200000000000000000000070 /* Project object */;
+}

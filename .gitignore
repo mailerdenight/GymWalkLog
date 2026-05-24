@@ -1,0 +1,29 @@
+# macOS
+.DS_Store
+
+# Xcode user state
+*.xcuserstate
+xcuserdata/
+
+# Xcode build products
+DerivedData/
+build/
+*.moved-aside
+*.xcscmblueprint
+
+# Swift Package Manager
+.build/
+
+# Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+# App archives and symbols
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Local editor settings
+.vscode/
+.idea/
+.claude/
