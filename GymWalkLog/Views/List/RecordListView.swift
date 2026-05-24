@@ -88,7 +88,7 @@ struct RecordListView: View {
 
             if !appSettings.isPro {
                 Section {
-                    Text("近30件まで表示しています")
+                    Text("記録一覧は直近30件まで表示しています")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
