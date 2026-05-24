@@ -56,11 +56,11 @@ struct ProUpgradeView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             VStack(spacing: 10) {
-                featureRow(icon: "calendar", title: "30件以前の記録も表示", desc: "過去の全記録を振り返れます")
-                featureRow(icon: "photo.stack", title: "写真つき記録を保存", desc: "記録ごとに最大3枚まで追加できます")
+                featureRow(icon: "plus.circle", title: "31件目以降も記録", desc: "続けた分だけ記録を残せます")
+                featureRow(icon: "calendar", title: "全履歴を表示", desc: "過去の全記録を振り返れます")
                 featureRow(icon: "chart.bar.fill", title: "週・月・年の振り返りグラフ", desc: "成長の軌跡が一目でわかります")
                 featureRow(icon: "square.and.arrow.up", title: "データをCSVで書き出し", desc: "記録を手元に残せます")
-                featureRow(icon: "icloud", title: "iCloudバックアップ（自動）", desc: "購入後すぐに同期設定へ切り替わります")
+                featureRow(icon: "icloud", title: "iCloud同期（自動）", desc: "利用環境が整っていれば自動で同期します")
             }
         }
         .padding(16)

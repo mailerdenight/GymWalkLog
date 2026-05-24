@@ -492,7 +492,7 @@ struct SettingsView: View {
             VStack(alignment: .leading, spacing: 16) {
                 helpItem(title: "記録の仕方", body: "+ ボタンをタップして、距離・時間・カロリーを入力し保存します。写真は最大3枚まで添付できます。")
                 helpItem(title: "無料で使える機能", body: "30件までの記録、カレンダー、今月の統計、連続記録を無料でご利用いただけます。記録一覧は直近30件を表示します。")
-                helpItem(title: "Proとは", body: "買い切り\(purchaseManager.priceString)で、31件目以降の記録・グラフ・エクスポート・iCloudバックアップが使えます。サブスクリプションはありません。")
+                helpItem(title: "Proとは", body: "買い切り\(purchaseManager.priceString)で、31件目以降の記録・グラフ・エクスポート・iCloud同期が使えます。サブスクリプションはありません。")
                 helpItem(title: "このアプリの考え方", body: "がんばりすぎなくていい。小さな一歩を大切に。自分のペースで続けられることが大事です。")
             }
             .padding()

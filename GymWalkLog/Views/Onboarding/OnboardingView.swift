@@ -23,7 +23,7 @@ struct OnboardingView: View {
         OnboardingPage(
             icon: "calendar",
             title: "続けた日が積み重なる",
-            body: "カレンダーに記録した日が\nひとつずつ埋まっていきます。\n連続記録、月の達成状況、\nグラフでふり返ることができます。",
+            body: "カレンダーに記録した日が\nひとつずつ埋まっていきます。\n連続記録や月の達成状況で\n自分のペースをふり返れます。",
             isLast: false
         ),
         OnboardingPage(
