@@ -52,8 +52,8 @@
 
 ## サポート・プライバシー
 
-- サポートURL: `https://gymwalklog.app/support.html`
-- プライバシーポリシーURL: `https://gymwalklog.app/privacy.html`
+- サポートURL: `https://mailerdenight.github.io/GymWalkLog/support.html`
+- プライバシーポリシーURL: `https://mailerdenight.github.io/GymWalkLog/privacy.html`
 - サポートメール: `support@gymwalklog.app`
 
 ## スクリーンショット候補
@@ -76,8 +76,8 @@
 ## リリース前チェック
 
 - [ ] `support@gymwalklog.app` が実際に受信できる
-- [ ] `https://gymwalklog.app/support.html` を公開済み
-- [ ] `https://gymwalklog.app/privacy.html` を公開済み
+- [ ] `https://mailerdenight.github.io/GymWalkLog/support.html` を公開済み
+- [ ] `https://mailerdenight.github.io/GymWalkLog/privacy.html` を公開済み
 - [ ] App Store Connect の年齢区分とプライバシー回答を入力済み
 - [ ] アプリ内課金 `Pro` の商品情報が App Store Connect 側で審査提出可能
 - [ ] 実機でカメラ撮影、アルバム追加、OCR、購入復元、ウィジェットを最終確認
