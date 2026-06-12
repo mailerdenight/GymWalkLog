@@ -54,7 +54,7 @@
 
 - サポートURL: `https://mailerdenight.github.io/GymWalkLog/support.html`
 - プライバシーポリシーURL: `https://mailerdenight.github.io/GymWalkLog/privacy.html`
-- サポートメール: `support@gymwalklog.app`
+- サポートメール: `mailerdenight@gmail.com`
 
 ## スクリーンショット候補
 
@@ -75,7 +75,7 @@
 
 ## リリース前チェック
 
-- [ ] `support@gymwalklog.app` が実際に受信できる
+- [ ] `mailerdenight@gmail.com` が実際に受信できる
 - [ ] `https://mailerdenight.github.io/GymWalkLog/support.html` を公開済み
 - [ ] `https://mailerdenight.github.io/GymWalkLog/privacy.html` を公開済み
 - [ ] App Store Connect の年齢区分とプライバシー回答を入力済み
