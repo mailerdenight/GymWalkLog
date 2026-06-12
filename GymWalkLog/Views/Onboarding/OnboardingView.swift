@@ -10,6 +10,7 @@ struct OnboardingView: View {
     private var pages: [OnboardingPage] {[
         OnboardingPage(
             icon: "figure.walk",
+            imageName: "AppLogo",
             title: "ジム歩走ログへ",
             body: "トレッドミルでの歩き・走りを\nシンプルに記録するアプリです。\nがんばりすぎなくていい。\n自分のペースで続けていきましょう。",
             isLast: false
@@ -60,12 +61,21 @@ struct OnboardingView: View {
             Spacer()
 
             ZStack {
-                Circle()
-                    .fill(theme.primaryColor.opacity(0.12))
-                    .frame(width: 120, height: 120)
-                Image(systemName: page.icon)
-                    .font(.system(size: 52, weight: .light))
-                    .foregroundColor(theme.primaryColor)
+                if let imageName = page.imageName {
+                    Image(imageName)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 128, height: 128)
+                        .clipShape(RoundedRectangle(cornerRadius: 28))
+                        .shadow(color: .black.opacity(0.08), radius: 12, y: 6)
+                } else {
+                    Circle()
+                        .fill(theme.primaryColor.opacity(0.12))
+                        .frame(width: 120, height: 120)
+                    Image(systemName: page.icon)
+                        .font(.system(size: 52, weight: .light))
+                        .foregroundColor(theme.primaryColor)
+                }
             }
 
             VStack(spacing: 14) {
@@ -140,6 +150,7 @@ struct OnboardingView: View {
 
 private struct OnboardingPage {
     let icon: String
+    var imageName: String? = nil
     let title: String
     let body: String
     let isLast: Bool

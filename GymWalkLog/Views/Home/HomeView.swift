@@ -49,6 +49,15 @@ struct HomeView: View {
         return streak
     }
 
+    private var daysSinceLastRecord: Int? {
+        guard let last = records.map(\.date).max() else { return nil }
+        return calendar.dateComponents([.day], from: calendar.startOfDay(for: last), to: calendar.startOfDay(for: Date())).day
+    }
+
+    private var shouldShowReturnEncouragement: Bool {
+        (daysSinceLastRecord ?? 0) >= 14
+    }
+
     private var greetingText: String {
         let hour = calendar.component(.hour, from: Date())
         switch hour {
@@ -63,13 +72,17 @@ struct HomeView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
-                    greetingCard
-                    monthlyStatsCard
-                    streakCard
-                    miniCalendarCard
-                    recentRecordsCard
+                    if shouldShowReturnEncouragement {
+                        returnEncouragementView
+                    } else {
+                        greetingCard
+                        monthlyStatsCard
+                        streakCard
+                        miniCalendarCard
+                        recentRecordsCard
+                    }
 
-                    if appSettings.isTrialExpired && !appSettings.isPro {
+                    if records.count >= 30 && !appSettings.isPro {
                         proPromotionBanner
                     }
 
@@ -154,6 +167,59 @@ struct HomeView: View {
         .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
     }
 
+    private var returnEncouragementView: some View {
+        VStack(spacing: 16) {
+            VStack(spacing: 8) {
+                ThemePlantIllustration(theme: theme, size: 54)
+                Text("久しぶりですね")
+                    .font(.title3)
+                    .fontWeight(.bold)
+                Text("また始めるのに、遅すぎることはありません。")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .padding(.top, 24)
+
+            encouragementItem(
+                icon: "figure.walk",
+                title: "今日は歩くだけでもOK",
+                body: "10分だけでも、体と心が動きます。"
+            )
+            encouragementItem(
+                icon: "heart.fill",
+                title: "あなたのペースで大丈夫",
+                body: "比べるのは、昨日の自分だけ。"
+            )
+            encouragementItem(
+                icon: "face.smiling.fill",
+                title: "続いた日を、ちゃんと残そう",
+                body: "小さな一歩が、未来の自分をつくります。"
+            )
+        }
+    }
+
+    private func encouragementItem(icon: String, title: String, body: String) -> some View {
+        HStack(spacing: 14) {
+            Image(systemName: icon)
+                .font(.system(size: 26))
+                .foregroundColor(theme.primaryColor)
+                .frame(width: 42)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                Text(body)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            Spacer()
+        }
+        .padding(16)
+        .background(theme.cardColor)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
+    }
+
     private var monthlyStatsCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             let now = Date()
@@ -166,7 +232,7 @@ struct HomeView: View {
                 Spacer()
                 NavigationLink(destination: StatsView()) {
                     HStack(spacing: 2) {
-                        Text("統計を見る")
+                        Text("レポートを見る")
                         Image(systemName: "chevron.right")
                     }
                     .font(.caption)
@@ -179,7 +245,7 @@ struct HomeView: View {
                 Divider().frame(height: 40)
                 statItem(value: String(format: "%.1f", totalDistanceKm), unit: "km")
                 Divider().frame(height: 40)
-                statItem(value: formatDuration(totalDurationSeconds), unit: "時間")
+                statItem(value: formatDuration(totalDurationSeconds), unit: "h:mm")
                 Divider().frame(height: 40)
                 statItem(value: "\(Int(totalCalories))", unit: "kcal")
             }
@@ -222,40 +288,45 @@ struct HomeView: View {
     }
 
     private var streakCard: some View {
-        HStack(spacing: 16) {
-            ZStack {
-                Circle()
-                    .stroke(theme.primaryColor.opacity(0.2), lineWidth: 3)
-                    .frame(width: 72, height: 72)
-                Circle()
-                    .trim(from: 0, to: min(CGFloat(streakDays) / 30, 1))
-                    .stroke(theme.primaryColor, style: StrokeStyle(lineWidth: 3, lineCap: .round))
-                    .frame(width: 72, height: 72)
-                    .rotationEffect(.degrees(-90))
-                VStack(spacing: 0) {
-                    Text("\(streakDays)")
-                        .font(.system(size: 22, weight: .bold, design: .rounded))
-                        .foregroundColor(theme.primaryColor)
-                    Text("日")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
+        ZStack(alignment: .trailing) {
+            HStack(spacing: 16) {
+                ZStack {
+                    Circle()
+                        .stroke(theme.primaryColor.opacity(0.2), lineWidth: 3)
+                        .frame(width: 72, height: 72)
+                    Circle()
+                        .trim(from: 0, to: min(CGFloat(streakDays) / 30, 1))
+                        .stroke(theme.primaryColor, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                        .frame(width: 72, height: 72)
+                        .rotationEffect(.degrees(-90))
+                    VStack(spacing: 0) {
+                        Text("\(streakDays)")
+                            .font(.system(size: 22, weight: .bold, design: .rounded))
+                            .foregroundColor(theme.primaryColor)
+                        Text("日")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
                 }
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("連続記録")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                    Text(streakDays > 0 ? "続けています！" : "今日から始めよう")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    if streakDays >= 7 {
+                        Text("いいペースです 🌿")
+                            .font(.caption)
+                            .foregroundColor(theme.primaryColor)
+                    }
+                }
+                Spacer(minLength: 66)
             }
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text("連続記録")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                Text(streakDays > 0 ? "続けています！" : "今日から始めよう")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                if streakDays >= 7 {
-                    Text("いいペースです 🌿")
-                        .font(.caption)
-                        .foregroundColor(theme.primaryColor)
-                }
-            }
-            Spacer()
+            ThemePlantIllustration(theme: theme, size: 64)
+                .padding(.trailing, 6)
         }
         .padding(16)
         .background(theme.cardColor)
@@ -329,10 +400,10 @@ struct HomeView: View {
                 Image(systemName: "leaf.fill")
                     .foregroundColor(theme.primaryColor)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("全履歴を表示しませんか？")
+                    Text("31件目以降も記録しませんか？")
                         .font(.subheadline)
                         .fontWeight(.medium)
-                    Text("Proにするとすべての記録を振り返れます")
+                    Text("Proにすると31件目以降も保存でき、全履歴を振り返れます")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -375,7 +446,7 @@ struct RecentRecordRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            if let data = record.photoData1, let uiImage = UIImage(data: data) {
+            if let data = record.primaryPhotoData, let uiImage = UIImage(data: data) {
                 Image(uiImage: uiImage)
                     .resizable()
                     .scaledToFill()

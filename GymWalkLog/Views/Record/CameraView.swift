@@ -30,6 +30,7 @@ struct CameraView: UIViewControllerRepresentable {
             didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
         ) {
             if let image = info[.originalImage] as? UIImage {
+                UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
                 onCapture(image)
             }
             picker.dismiss(animated: true)

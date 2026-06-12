@@ -138,33 +138,40 @@ struct CalendarFullView: View {
     // MARK: - Achievement card
 
     private var achievementCard: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("今月の達成状況")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            HStack(alignment: .lastTextBaseline, spacing: 4) {
-                Text("\(monthRecords.count)")
-                    .font(.system(size: 32, weight: .bold, design: .rounded))
-                    .foregroundColor(theme.primaryColor)
-                Text("/ \(monthlyGoal)回")
+        ZStack(alignment: .trailing) {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("今月の達成状況")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
+                HStack(alignment: .lastTextBaseline, spacing: 4) {
+                    Text("\(monthRecords.count)")
+                        .font(.system(size: 32, weight: .bold, design: .rounded))
+                        .foregroundColor(theme.primaryColor)
+                    Text("/ \(monthlyGoal)回")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+                ProgressView(
+                    value: Double(min(monthRecords.count, monthlyGoal)),
+                    total: Double(monthlyGoal)
+                )
+                .tint(theme.primaryColor)
+                .padding(.trailing, 70)
+                let remaining = monthlyGoal - monthRecords.count
+                if remaining > 0 {
+                    Text("あと\(remaining)回で目標達成！")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                } else {
+                    Text("目標達成！すばらしい 🎉")
+                        .font(.caption)
+                        .foregroundColor(theme.primaryColor)
+                }
             }
-            ProgressView(
-                value: Double(min(monthRecords.count, monthlyGoal)),
-                total: Double(monthlyGoal)
-            )
-            .tint(theme.primaryColor)
-            let remaining = monthlyGoal - monthRecords.count
-            if remaining > 0 {
-                Text("あと\(remaining)回で目標達成！")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            } else {
-                Text("目標達成！すばらしい 🎉")
-                    .font(.caption)
-                    .foregroundColor(theme.primaryColor)
-            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            ThemePlantIllustration(theme: theme, size: 72)
+                .padding(.trailing, 6)
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -183,7 +190,7 @@ struct CalendarFullView: View {
 
         return VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("30日チャレンジ")
+                Text("月間チャレンジ")
                     .font(.subheadline)
                     .fontWeight(.medium)
                 Spacer()

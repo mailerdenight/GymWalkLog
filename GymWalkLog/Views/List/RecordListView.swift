@@ -7,11 +7,15 @@ struct RecordListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \WorkoutRecord.date, order: .reverse) private var allRecords: [WorkoutRecord]
     @State private var showProUpgrade = false
+    @State private var sortOrder: RecordSortOrder = .newest
 
     var theme: AppTheme { appSettings.theme }
 
     private var visibleRecords: [WorkoutRecord] {
-        appSettings.isPro ? allRecords : Array(allRecords.prefix(30))
+        let limited = appSettings.isPro ? allRecords : Array(allRecords.prefix(30))
+        return limited.sorted {
+            sortOrder == .newest ? $0.date > $1.date : $0.date < $1.date
+        }
     }
 
     private var groupedRecords: [(String, [WorkoutRecord])] {
@@ -25,10 +29,12 @@ struct RecordListView: View {
             let key = formatter.string(from: record.date)
             groups[key, default: []].append(record)
             let start = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: record.date)) ?? record.date
-            monthStarts[key] = max(monthStarts[key] ?? .distantPast, start)
+            if monthStarts[key] == nil { monthStarts[key] = start }
         }
         return groups.sorted { lhs, rhs in
-            (monthStarts[lhs.0] ?? .distantPast) > (monthStarts[rhs.0] ?? .distantPast)
+            sortOrder == .newest
+                ? (monthStarts[lhs.0] ?? .distantPast) > (monthStarts[rhs.0] ?? .distantPast)
+                : (monthStarts[lhs.0] ?? .distantPast) < (monthStarts[rhs.0] ?? .distantPast)
         }
     }
 
@@ -46,8 +52,19 @@ struct RecordListView: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Image(systemName: "line.3.horizontal.decrease.circle")
-                        .foregroundColor(theme.primaryColor)
+                    Menu {
+                        ForEach(RecordSortOrder.allCases, id: \.self) { order in
+                            Button {
+                                sortOrder = order
+                            } label: {
+                                Label(order.title, systemImage: sortOrder == order ? "checkmark" : "")
+                            }
+                        }
+                    } label: {
+                        Label(sortOrder.title, systemImage: "arrow.up.arrow.down")
+                            .labelStyle(.iconOnly)
+                            .foregroundColor(theme.primaryColor)
+                    }
                 }
             }
         }
@@ -84,15 +101,6 @@ struct RecordListView: View {
                     .padding(.vertical, 4)
                 }
                 .listRowBackground(theme.primaryColor.opacity(0.06))
-            }
-
-            if !appSettings.isPro {
-                Section {
-                    Text("記録一覧は直近30件まで表示しています")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                .listRowBackground(Color.clear)
             }
 
             ForEach(groupedRecords, id: \.0) { monthKey, monthRecords in
@@ -134,6 +142,18 @@ struct RecordListView: View {
     }
 }
 
+private enum RecordSortOrder: CaseIterable {
+    case newest
+    case oldest
+
+    var title: String {
+        switch self {
+        case .newest: return "新しい順"
+        case .oldest: return "古い順"
+        }
+    }
+}
+
 struct RecordListRow: View {
     @EnvironmentObject var appSettings: AppSettings
     let record: WorkoutRecord
@@ -149,7 +169,7 @@ struct RecordListRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            if let data = record.photoData1, let uiImage = UIImage(data: data) {
+            if let data = record.primaryPhotoData, let uiImage = UIImage(data: data) {
                 Image(uiImage: uiImage)
                     .resizable()
                     .scaledToFill()
@@ -166,7 +186,12 @@ struct RecordListRow: View {
                     )
             }
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text(dateFormatter.string(from: record.date))
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(theme.primaryColor)
+
                 HStack {
                     Text(String(format: "%.2f km", record.distanceKm))
                         .font(.subheadline)
@@ -180,10 +205,8 @@ struct RecordListRow: View {
                             .foregroundColor(.secondary)
                     }
                 }
-                if let pace = record.paceMinPerKm {
-                    let mins = Int(pace)
-                    let secs = Int((pace - Double(mins)) * 60)
-                    Text(String(format: "%d:%02d /km", mins, secs))
+                if let speed = record.averageSpeedKmh {
+                    Text(String(format: "%.1f km/h", speed))
                         .font(.caption)
                         .foregroundColor(theme.primaryColor)
                 }

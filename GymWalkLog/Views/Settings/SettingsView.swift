@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UIKit
 
 struct SettingsView: View {
     @EnvironmentObject var appSettings: AppSettings
@@ -13,6 +14,7 @@ struct SettingsView: View {
     @State private var treadmillProfile = TreadmillProfile.load()
     @State private var weightText = ""
     @State private var showCalorieInfo = false
+    @State private var exportErrorMessage: String? = nil
 
     var theme: AppTheme { appSettings.theme }
 
@@ -44,6 +46,14 @@ struct SettingsView: View {
             Button("キャンセル", role: .cancel) {}
         } message: {
             Text("エクスポート機能はPro機能です。")
+        }
+        .alert("エクスポートできませんでした", isPresented: Binding(
+            get: { exportErrorMessage != nil },
+            set: { if !$0 { exportErrorMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(exportErrorMessage ?? "")
         }
         .confirmationDialog("全データを削除しますか？", isPresented: $showDeleteConfirm, titleVisibility: .visible) {
             Button("すべて削除", role: .destructive) {
@@ -158,12 +168,25 @@ struct SettingsView: View {
 
     private var themeSection: some View {
         Section("テーマ") {
-            HStack(spacing: 12) {
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                 ForEach(AppTheme.allCases, id: \.self) { t in
                     themeCard(t)
                 }
             }
             .padding(.vertical, 4)
+
+            HStack {
+                Text("明るさ")
+                    .font(.subheadline)
+                Spacer()
+                Picker("", selection: $appSettings.brightness) {
+                    ForEach(AppBrightness.allCases, id: \.self) { b in
+                        Text(b.displayName).tag(b)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .frame(width: 200)
+            }
         }
     }
 
@@ -214,7 +237,7 @@ struct SettingsView: View {
                         Text(setting.displayName)
                             .font(.subheadline)
                         if setting == .gentle {
-                            Text("週1回のふり返り / 久しぶりのお知らせ / 月のまとめ")
+                            Text("週1回のふり返り / 久しぶりのお知らせ / 先月のまとめ")
                                 .font(.caption2)
                                 .foregroundColor(.secondary)
                         } else if setting == .daily {
@@ -279,7 +302,7 @@ struct SettingsView: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Proについて（買い切り \(purchaseManager.priceString)）")
                                 .font(.subheadline)
-                            Text("31件目以降の記録 / グラフ / エクスポート")
+                            Text("31件目以降の記録 / グラフ / 写真保存 / PDF・CSV出力")
                                 .font(.caption2)
                                 .foregroundColor(.secondary)
                         }
@@ -371,7 +394,7 @@ struct SettingsView: View {
         Section("その他") {
             Button {
                 if appSettings.isPro {
-                    exportCSV()
+                    exportData()
                 } else {
                     showExportAlert = true
                 }
@@ -379,7 +402,7 @@ struct SettingsView: View {
                 HStack {
                     Image(systemName: "square.and.arrow.up")
                         .foregroundColor(theme.primaryColor)
-                    Text("データをエクスポート（CSV）")
+                    Text("データをエクスポート（PDF / CSV）")
                         .font(.subheadline)
                         .foregroundColor(.primary)
                     Spacer()
@@ -490,9 +513,9 @@ struct SettingsView: View {
     private var helpView: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                helpItem(title: "記録の仕方", body: "+ ボタンをタップして、距離・時間・カロリーを入力し保存します。写真は最大3枚まで添付できます。")
-                helpItem(title: "無料で使える機能", body: "30件までの記録、カレンダー、今月の統計、連続記録を無料でご利用いただけます。記録一覧は直近30件を表示します。")
-                helpItem(title: "Proとは", body: "買い切り\(purchaseManager.priceString)で、31件目以降の記録・グラフ・エクスポート・iCloud同期が使えます。サブスクリプションはありません。")
+                helpItem(title: "記録の仕方", body: "+ ボタンをタップして、距離・時間・カロリーを入力し保存します。写真は何枚でも添付できます。")
+                helpItem(title: "無料で使える機能", body: "30件までの記録、カレンダー、今月のレポート、連続記録を無料でご利用いただけます。記録一覧は直近30件を表示します。")
+                helpItem(title: "Proとは", body: "買い切り\(purchaseManager.priceString)で、31件目以降の記録・グラフ・写真保存・PDF/CSVエクスポートが使えます。サブスクリプションはありません。")
                 helpItem(title: "このアプリの考え方", body: "がんばりすぎなくていい。小さな一歩を大切に。自分のペースで続けられることが大事です。")
             }
             .padding()
@@ -516,12 +539,23 @@ struct SettingsView: View {
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 
-    private func exportCSV() {
+    private func exportData() {
+        let records = allRecords.sorted { $0.date > $1.date }
+        do {
+            let csvURL = try makeCSVExportURL(records: records)
+            let pdfURL = try makePDFExportURL(records: records)
+            presentShareSheet(urls: [pdfURL, csvURL])
+        } catch {
+            exportErrorMessage = "書き出しファイルを作成できませんでした。空き容量を確認して、もう一度お試しください。"
+        }
+    }
+
+    private func makeCSVExportURL(records: [WorkoutRecord]) throws -> URL {
         var csv = "日付,距離(km),時間(秒),カロリー(kcal),メモ\n"
         let f = DateFormatter()
         f.locale = Locale(identifier: "ja_JP")
         f.dateFormat = "yyyy/M/d"
-        for r in allRecords {
+        for r in records {
             let kcal = r.caloriesKcal.map { String(Int($0)) } ?? ""
             let memo = r.memo ?? ""
             csv += [
@@ -533,8 +567,85 @@ struct SettingsView: View {
             ].map(csvField).joined(separator: ",") + "\n"
         }
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("gymwalklog_export.csv")
-        try? csv.write(to: url, atomically: true, encoding: .utf8)
-        let vc = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        try csv.write(to: url, atomically: true, encoding: .utf8)
+        return url
+    }
+
+    private func makePDFExportURL(records: [WorkoutRecord]) throws -> URL {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("gymwalklog_export.pdf")
+        let bounds = CGRect(x: 0, y: 0, width: 595, height: 842)
+        let renderer = UIGraphicsPDFRenderer(bounds: bounds)
+        let titleFont = UIFont.systemFont(ofSize: 22, weight: .bold)
+        let headingFont = UIFont.systemFont(ofSize: 13, weight: .semibold)
+        let bodyFont = UIFont.systemFont(ofSize: 11, weight: .regular)
+        let smallFont = UIFont.systemFont(ofSize: 9, weight: .regular)
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.lineBreakMode = .byWordWrapping
+
+        try renderer.writePDF(to: url) { context in
+            var pageIndex = 0
+            var y: CGFloat = 0
+
+            func beginPage() {
+                context.beginPage()
+                pageIndex += 1
+                y = 44
+                let pageTitle = pageIndex == 1 ? "ジム歩走ログ エクスポート" : "ジム歩走ログ"
+                pageTitle.draw(at: CGPoint(x: 40, y: y), withAttributes: [.font: titleFont])
+                y += 34
+                let generated = "作成日: \(DateFormatter.localizedString(from: Date(), dateStyle: .medium, timeStyle: .short))"
+                generated.draw(at: CGPoint(x: 40, y: y), withAttributes: [.font: smallFont, .foregroundColor: UIColor.secondaryLabel])
+                y += 24
+            }
+
+            func ensureSpace(_ height: CGFloat) {
+                if pageIndex == 0 || y + height > bounds.height - 44 {
+                    beginPage()
+                }
+            }
+
+            beginPage()
+
+            for record in records {
+                ensureSpace(110)
+
+                let cardRect = CGRect(x: 36, y: y, width: bounds.width - 72, height: 96)
+                let ctx = context.cgContext
+                ctx.saveGState()
+                UIBezierPath(roundedRect: cardRect, cornerRadius: 14).addClip()
+                UIColor.secondarySystemBackground.setFill()
+                UIRectFill(cardRect)
+                ctx.restoreGState()
+
+                let dateText = DateFormatter.localizedString(from: record.date, dateStyle: .medium, timeStyle: .none)
+                dateText.draw(at: CGPoint(x: cardRect.minX + 16, y: cardRect.minY + 14), withAttributes: [.font: headingFont])
+
+                let summary = [
+                    "距離: \(String(format: "%.2f km", record.distanceKm))",
+                    "時間: \(record.durationFormatted)",
+                    "カロリー: \(record.caloriesKcal.map { "\(Int($0.rounded())) kcal" } ?? "-")"
+                ].joined(separator: "   ")
+                summary.draw(
+                    in: CGRect(x: cardRect.minX + 16, y: cardRect.minY + 36, width: cardRect.width - 32, height: 18),
+                    withAttributes: [.font: bodyFont]
+                )
+
+                let memo = record.memo?.isEmpty == false ? record.memo! : "メモなし"
+                let memoText = "メモ: \(memo)"
+                memoText.draw(
+                    in: CGRect(x: cardRect.minX + 16, y: cardRect.minY + 56, width: cardRect.width - 32, height: 28),
+                    withAttributes: [.font: bodyFont, .paragraphStyle: paragraph, .foregroundColor: UIColor.secondaryLabel]
+                )
+
+                y = cardRect.maxY + 12
+            }
+        }
+
+        return url
+    }
+
+    private func presentShareSheet(urls: [URL]) {
+        let vc = UIActivityViewController(activityItems: urls, applicationActivities: nil)
         if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let root = scene.windows.first?.rootViewController {
             root.present(vc, animated: true)

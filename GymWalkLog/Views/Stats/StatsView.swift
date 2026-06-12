@@ -24,7 +24,7 @@ struct StatsView: View {
             }
         }
         .background(theme.backgroundColor.ignoresSafeArea())
-        .navigationTitle("統計")
+        .navigationTitle("レポート")
         .navigationBarTitleDisplayMode(.large)
         .sheet(isPresented: $showProUpgrade) {
             ProUpgradeView()
@@ -37,7 +37,7 @@ struct StatsView: View {
                 Image(systemName: "chart.bar.fill")
                     .font(.system(size: 40))
                     .foregroundColor(theme.primaryColor.opacity(0.5))
-                Text("統計グラフはPro機能です")
+                Text("レポートはPro機能です")
                     .font(.headline)
                 Text("週・月・年の振り返りグラフが使えます")
                     .font(.subheadline)
@@ -195,30 +195,38 @@ struct StatsView: View {
         let dist = records.reduce(0.0) { $0 + $1.distanceKm }
         let dur = records.reduce(0) { $0 + $1.durationSeconds }
         let kcal = records.compactMap { $0.caloriesKcal }.reduce(0, +)
+        let speed = dur > 0 ? dist / (Double(dur) / 3600.0) : 0
 
-        return HStack(spacing: 10) {
-            summaryCard(value: "\(count)", unit: "回", label: "回数")
-            summaryCard(value: String(format: "%.1f", dist), unit: "km", label: "距離")
-            summaryCard(value: formatHours(dur), unit: "", label: "時間")
-            summaryCard(value: "\(Int(kcal))", unit: "kcal", label: "カロリー")
+        return LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+            summaryCard(icon: "figure.walk.circle.fill", value: formatHours(dur), unit: "", label: "運動時間")
+            summaryCard(icon: "flame.fill", value: "\(Int(kcal))", unit: "kcal", label: "消費カロリー")
+            summaryCard(icon: "speedometer", value: String(format: "%.1f", speed), unit: "km/h", label: "平均速度")
+            summaryCard(icon: "calendar", value: "\(count)", unit: "回", label: "ジムに行った回数")
         }
     }
 
-    private func summaryCard(value: String, unit: String, label: String) -> some View {
-        VStack(spacing: 4) {
-            HStack(alignment: .lastTextBaseline, spacing: 2) {
-                Text(value)
-                    .font(.system(size: 18, weight: .bold, design: .rounded))
-                    .foregroundColor(theme.primaryColor)
-                Text(unit)
+    private func summaryCard(icon: String, value: String, unit: String, label: String) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: icon)
+                .foregroundColor(theme.primaryColor)
+                .frame(width: 22)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(label)
                     .font(.caption2)
                     .foregroundColor(.secondary)
+                HStack(alignment: .lastTextBaseline, spacing: 3) {
+                    Text(value)
+                        .font(.system(size: 19, weight: .bold, design: .rounded))
+                        .foregroundColor(.primary)
+                    Text(unit)
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
             }
-            Text(label)
-                .font(.caption2)
-                .foregroundColor(.secondary)
+            Spacer(minLength: 0)
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 12)
         .padding(.vertical, 12)
         .background(theme.cardColor)
         .clipShape(RoundedRectangle(cornerRadius: 10))

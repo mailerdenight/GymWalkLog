@@ -9,28 +9,29 @@
 /* Begin PBXBuildFile section */
 		200000000000000000000101 /* GymWalkLogApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000001 /* GymWalkLogApp.swift */; };
 		200000000000000000000102 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000002 /* MainTabView.swift */; };
-		200000000000000000000103 /* WorkoutRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000003 /* WorkoutRecord.swift */; };
-		200000000000000000000104 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000004 /* AppSettings.swift */; };
-		200000000000000000000105 /* PurchaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000005 /* PurchaseManager.swift */; };
-		200000000000000000000106 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000006 /* NotificationManager.swift */; };
-		200000000000000000000107 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000007 /* HomeView.swift */; };
-		200000000000000000000108 /* MiniCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000008 /* MiniCalendarView.swift */; };
-		200000000000000000000109 /* NewRecordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000009 /* NewRecordView.swift */; };
-		20000000000000000000010A /* RecordDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000A /* RecordDetailView.swift */; };
-		20000000000000000000010B /* RecordListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000B /* RecordListView.swift */; };
-		20000000000000000000010C /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000C /* StatsView.swift */; };
-		20000000000000000000010D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000D /* SettingsView.swift */; };
-		20000000000000000000010E /* ProUpgradeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000E /* ProUpgradeView.swift */; };
-		20000000000000000000010F /* ColorTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000F /* ColorTheme.swift */; };
+		200000000000000000000103 /* Models/WorkoutRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000003 /* Models/WorkoutRecord.swift */; };
+		200000000000000000000104 /* Models/AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000004 /* Models/AppSettings.swift */; };
+		200000000000000000000105 /* Managers/PurchaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000005 /* Managers/PurchaseManager.swift */; };
+		200000000000000000000106 /* Managers/NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000006 /* Managers/NotificationManager.swift */; };
+		200000000000000000000107 /* Views/Home/HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000007 /* Views/Home/HomeView.swift */; };
+		200000000000000000000108 /* Views/Home/MiniCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000008 /* Views/Home/MiniCalendarView.swift */; };
+		200000000000000000000109 /* Views/Record/NewRecordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000009 /* Views/Record/NewRecordView.swift */; };
+		20000000000000000000010A /* Views/Record/RecordDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000A /* Views/Record/RecordDetailView.swift */; };
+		20000000000000000000010B /* Views/List/RecordListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000B /* Views/List/RecordListView.swift */; };
+		20000000000000000000010C /* Views/Stats/StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000C /* Views/Stats/StatsView.swift */; };
+		20000000000000000000010D /* Views/Settings/SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000D /* Views/Settings/SettingsView.swift */; };
+		20000000000000000000010E /* Views/Pro/ProUpgradeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000E /* Views/Pro/ProUpgradeView.swift */; };
+		20000000000000000000010F /* Extensions/ColorTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000000F /* Extensions/ColorTheme.swift */; };
 		200000000000000000000110 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000010 /* Assets.xcassets */; };
-		200000000000000000000111 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000011 /* Preview Assets.xcassets */; };
-		200000000000000000000112 /* WidgetDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000013 /* WidgetDataManager.swift */; };
-		200000000000000000000113 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000014 /* CameraView.swift */; };
-		200000000000000000000116 /* PhotoOCRManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000017 /* PhotoOCRManager.swift */; };
-		200000000000000000000117 /* TreadmillProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000018 /* TreadmillProfile.swift */; };
-		200000000000000000000118 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000019 /* OnboardingView.swift */; };
-		200000000000000000000114 /* CalendarFullView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000015 /* CalendarFullView.swift */; };
-		200000000000000000000115 /* AlbumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000016 /* AlbumView.swift */; };
+		200000000000000000000111 /* Preview Content/Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000011 /* Preview Content/Preview Assets.xcassets */; };
+		200000000000000000000112 /* Managers/WidgetDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000013 /* Managers/WidgetDataManager.swift */; };
+		200000000000000000000113 /* Views/Record/CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000014 /* Views/Record/CameraView.swift */; };
+		200000000000000000000114 /* Views/Calendar/CalendarFullView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000015 /* Views/Calendar/CalendarFullView.swift */; };
+		200000000000000000000115 /* Views/Album/AlbumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000016 /* Views/Album/AlbumView.swift */; };
+		200000000000000000000116 /* Managers/PhotoOCRManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000017 /* Managers/PhotoOCRManager.swift */; };
+		200000000000000000000117 /* Managers/TreadmillProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000018 /* Managers/TreadmillProfile.swift */; };
+		200000000000000000000118 /* Views/Onboarding/OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000019 /* Views/Onboarding/OnboardingView.swift */; };
+		200000000000000000000119 /* Views/Shared/ThemePlantIllustration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20000000000000000000001C /* Views/Shared/ThemePlantIllustration.swift */; };
 		300000000000000000000101 /* GymWalkLogWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300000000000000000000001 /* GymWalkLogWidget.swift */; };
 		300000000000000000000102 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 300000000000000000000002 /* Assets.xcassets */; };
 		400000000000000000000101 /* GymWalkLogWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 300000000000000000000003 /* GymWalkLogWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -57,43 +58,43 @@
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
-			VALIDATE_PRODUCT = NO;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		200000000000000000000001 /* GymWalkLogApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GymWalkLogApp.swift; sourceTree = "<group>"; };
 		200000000000000000000002 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
-		200000000000000000000003 /* WorkoutRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/WorkoutRecord.swift; sourceTree = "<group>"; };
-		200000000000000000000004 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/AppSettings.swift; sourceTree = "<group>"; };
-		200000000000000000000005 /* PurchaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/PurchaseManager.swift; sourceTree = "<group>"; };
-		200000000000000000000006 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/NotificationManager.swift; sourceTree = "<group>"; };
-		200000000000000000000007 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Home/HomeView.swift; sourceTree = "<group>"; };
-		200000000000000000000008 /* MiniCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Home/MiniCalendarView.swift; sourceTree = "<group>"; };
-		200000000000000000000009 /* NewRecordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Record/NewRecordView.swift; sourceTree = "<group>"; };
-		20000000000000000000000A /* RecordDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Record/RecordDetailView.swift; sourceTree = "<group>"; };
-		20000000000000000000000B /* RecordListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/List/RecordListView.swift; sourceTree = "<group>"; };
-		20000000000000000000000C /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Stats/StatsView.swift; sourceTree = "<group>"; };
-		20000000000000000000000D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Settings/SettingsView.swift; sourceTree = "<group>"; };
-		20000000000000000000000E /* ProUpgradeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Pro/ProUpgradeView.swift; sourceTree = "<group>"; };
-		20000000000000000000000F /* ColorTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions/ColorTheme.swift; sourceTree = "<group>"; };
+		200000000000000000000003 /* Models/WorkoutRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/WorkoutRecord.swift; sourceTree = "<group>"; };
+		200000000000000000000004 /* Models/AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/AppSettings.swift; sourceTree = "<group>"; };
+		200000000000000000000005 /* Managers/PurchaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/PurchaseManager.swift; sourceTree = "<group>"; };
+		200000000000000000000006 /* Managers/NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/NotificationManager.swift; sourceTree = "<group>"; };
+		200000000000000000000007 /* Views/Home/HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Home/HomeView.swift; sourceTree = "<group>"; };
+		200000000000000000000008 /* Views/Home/MiniCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Home/MiniCalendarView.swift; sourceTree = "<group>"; };
+		200000000000000000000009 /* Views/Record/NewRecordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Record/NewRecordView.swift; sourceTree = "<group>"; };
+		20000000000000000000000A /* Views/Record/RecordDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Record/RecordDetailView.swift; sourceTree = "<group>"; };
+		20000000000000000000000B /* Views/List/RecordListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/List/RecordListView.swift; sourceTree = "<group>"; };
+		20000000000000000000000C /* Views/Stats/StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Stats/StatsView.swift; sourceTree = "<group>"; };
+		20000000000000000000000D /* Views/Settings/SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Settings/SettingsView.swift; sourceTree = "<group>"; };
+		20000000000000000000000E /* Views/Pro/ProUpgradeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Pro/ProUpgradeView.swift; sourceTree = "<group>"; };
+		20000000000000000000000F /* Extensions/ColorTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions/ColorTheme.swift; sourceTree = "<group>"; };
 		200000000000000000000010 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		200000000000000000000011 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Content/Preview Assets.xcassets"; sourceTree = "<group>"; };
+		200000000000000000000011 /* Preview Content/Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Content/Preview Assets.xcassets"; sourceTree = "<group>"; };
 		200000000000000000000012 /* GymWalkLog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GymWalkLog.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		200000000000000000000013 /* WidgetDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/WidgetDataManager.swift; sourceTree = "<group>"; };
-		200000000000000000000014 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Record/CameraView.swift; sourceTree = "<group>"; };
-		200000000000000000000017 /* PhotoOCRManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/PhotoOCRManager.swift; sourceTree = "<group>"; };
-		200000000000000000000018 /* TreadmillProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/TreadmillProfile.swift; sourceTree = "<group>"; };
-		200000000000000000000019 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Onboarding/OnboardingView.swift; sourceTree = "<group>"; };
-		200000000000000000000015 /* CalendarFullView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Calendar/CalendarFullView.swift; sourceTree = "<group>"; };
-		200000000000000000000016 /* AlbumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Album/AlbumView.swift; sourceTree = "<group>"; };
+		200000000000000000000013 /* Managers/WidgetDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/WidgetDataManager.swift; sourceTree = "<group>"; };
+		200000000000000000000014 /* Views/Record/CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Record/CameraView.swift; sourceTree = "<group>"; };
+		200000000000000000000015 /* Views/Calendar/CalendarFullView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Calendar/CalendarFullView.swift; sourceTree = "<group>"; };
+		200000000000000000000016 /* Views/Album/AlbumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Album/AlbumView.swift; sourceTree = "<group>"; };
+		200000000000000000000017 /* Managers/PhotoOCRManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/PhotoOCRManager.swift; sourceTree = "<group>"; };
+		200000000000000000000018 /* Managers/TreadmillProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Managers/TreadmillProfile.swift; sourceTree = "<group>"; };
+		200000000000000000000019 /* Views/Onboarding/OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Onboarding/OnboardingView.swift; sourceTree = "<group>"; };
+		20000000000000000000001C /* Views/Shared/ThemePlantIllustration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Shared/ThemePlantIllustration.swift; sourceTree = "<group>"; };
 		20000000000000000000001A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		20000000000000000000001B /* GymWalkLog.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GymWalkLog.entitlements; sourceTree = "<group>"; };
 		300000000000000000000001 /* GymWalkLogWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GymWalkLogWidget.swift; sourceTree = "<group>"; };
 		300000000000000000000002 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		300000000000000000000003 /* GymWalkLogWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; name = GymWalkLogWidget.appex; path = "GymWalkLog Widget.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		300000000000000000000004 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		300000000000000000000005 /* GymWalkLogWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GymWalkLogWidget.entitlements; sourceTree = "<group>"; };
-		300000000000000000000003 /* GymWalkLogWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "GymWalkLogWidget.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,30 +129,31 @@
 			children = (
 				200000000000000000000001 /* GymWalkLogApp.swift */,
 				200000000000000000000002 /* MainTabView.swift */,
-				200000000000000000000003 /* WorkoutRecord.swift */,
-				200000000000000000000004 /* AppSettings.swift */,
-				200000000000000000000005 /* PurchaseManager.swift */,
-				200000000000000000000006 /* NotificationManager.swift */,
-				200000000000000000000013 /* WidgetDataManager.swift */,
-				200000000000000000000017 /* PhotoOCRManager.swift */,
-				200000000000000000000018 /* TreadmillProfile.swift */,
-				200000000000000000000019 /* OnboardingView.swift */,
-				200000000000000000000007 /* HomeView.swift */,
-				200000000000000000000008 /* MiniCalendarView.swift */,
-				200000000000000000000009 /* NewRecordView.swift */,
-				200000000000000000000014 /* CameraView.swift */,
-				200000000000000000000015 /* CalendarFullView.swift */,
-				200000000000000000000016 /* AlbumView.swift */,
-				20000000000000000000000A /* RecordDetailView.swift */,
-				20000000000000000000000B /* RecordListView.swift */,
-				20000000000000000000000C /* StatsView.swift */,
-				20000000000000000000000D /* SettingsView.swift */,
-				20000000000000000000000E /* ProUpgradeView.swift */,
-				20000000000000000000000F /* ColorTheme.swift */,
+				200000000000000000000003 /* Models/WorkoutRecord.swift */,
+				200000000000000000000004 /* Models/AppSettings.swift */,
+				200000000000000000000005 /* Managers/PurchaseManager.swift */,
+				200000000000000000000006 /* Managers/NotificationManager.swift */,
+				200000000000000000000013 /* Managers/WidgetDataManager.swift */,
+				200000000000000000000017 /* Managers/PhotoOCRManager.swift */,
+				200000000000000000000018 /* Managers/TreadmillProfile.swift */,
+				200000000000000000000019 /* Views/Onboarding/OnboardingView.swift */,
+				20000000000000000000001C /* Views/Shared/ThemePlantIllustration.swift */,
+				200000000000000000000007 /* Views/Home/HomeView.swift */,
+				200000000000000000000008 /* Views/Home/MiniCalendarView.swift */,
+				200000000000000000000009 /* Views/Record/NewRecordView.swift */,
+				200000000000000000000014 /* Views/Record/CameraView.swift */,
+				200000000000000000000015 /* Views/Calendar/CalendarFullView.swift */,
+				200000000000000000000016 /* Views/Album/AlbumView.swift */,
+				20000000000000000000000A /* Views/Record/RecordDetailView.swift */,
+				20000000000000000000000B /* Views/List/RecordListView.swift */,
+				20000000000000000000000C /* Views/Stats/StatsView.swift */,
+				20000000000000000000000D /* Views/Settings/SettingsView.swift */,
+				20000000000000000000000E /* Views/Pro/ProUpgradeView.swift */,
+				20000000000000000000000F /* Extensions/ColorTheme.swift */,
 				20000000000000000000001A /* Info.plist */,
 				20000000000000000000001B /* GymWalkLog.entitlements */,
 				200000000000000000000010 /* Assets.xcassets */,
-				200000000000000000000011 /* Preview Assets.xcassets */,
+				200000000000000000000011 /* Preview Content/Preview Assets.xcassets */,
 			);
 			path = GymWalkLog;
 			sourceTree = "<group>";
@@ -259,7 +261,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				200000000000000000000110 /* Assets.xcassets in Resources */,
-				200000000000000000000111 /* Preview Assets.xcassets in Resources */,
+				200000000000000000000111 /* Preview Content/Preview Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,26 +282,27 @@
 			files = (
 				200000000000000000000101 /* GymWalkLogApp.swift in Sources */,
 				200000000000000000000102 /* MainTabView.swift in Sources */,
-				200000000000000000000103 /* WorkoutRecord.swift in Sources */,
-				200000000000000000000104 /* AppSettings.swift in Sources */,
-				200000000000000000000105 /* PurchaseManager.swift in Sources */,
-				200000000000000000000106 /* NotificationManager.swift in Sources */,
-				200000000000000000000112 /* WidgetDataManager.swift in Sources */,
-				200000000000000000000116 /* PhotoOCRManager.swift in Sources */,
-				200000000000000000000117 /* TreadmillProfile.swift in Sources */,
-				200000000000000000000118 /* OnboardingView.swift in Sources */,
-				200000000000000000000113 /* CameraView.swift in Sources */,
-				200000000000000000000114 /* CalendarFullView.swift in Sources */,
-				200000000000000000000115 /* AlbumView.swift in Sources */,
-				200000000000000000000107 /* HomeView.swift in Sources */,
-				200000000000000000000108 /* MiniCalendarView.swift in Sources */,
-				200000000000000000000109 /* NewRecordView.swift in Sources */,
-				20000000000000000000010A /* RecordDetailView.swift in Sources */,
-				20000000000000000000010B /* RecordListView.swift in Sources */,
-				20000000000000000000010C /* StatsView.swift in Sources */,
-				20000000000000000000010D /* SettingsView.swift in Sources */,
-				20000000000000000000010E /* ProUpgradeView.swift in Sources */,
-				20000000000000000000010F /* ColorTheme.swift in Sources */,
+				200000000000000000000103 /* Models/WorkoutRecord.swift in Sources */,
+				200000000000000000000104 /* Models/AppSettings.swift in Sources */,
+				200000000000000000000105 /* Managers/PurchaseManager.swift in Sources */,
+				200000000000000000000106 /* Managers/NotificationManager.swift in Sources */,
+				200000000000000000000112 /* Managers/WidgetDataManager.swift in Sources */,
+				200000000000000000000116 /* Managers/PhotoOCRManager.swift in Sources */,
+				200000000000000000000117 /* Managers/TreadmillProfile.swift in Sources */,
+				200000000000000000000118 /* Views/Onboarding/OnboardingView.swift in Sources */,
+				200000000000000000000119 /* Views/Shared/ThemePlantIllustration.swift in Sources */,
+				200000000000000000000113 /* Views/Record/CameraView.swift in Sources */,
+				200000000000000000000114 /* Views/Calendar/CalendarFullView.swift in Sources */,
+				200000000000000000000115 /* Views/Album/AlbumView.swift in Sources */,
+				200000000000000000000107 /* Views/Home/HomeView.swift in Sources */,
+				200000000000000000000108 /* Views/Home/MiniCalendarView.swift in Sources */,
+				200000000000000000000109 /* Views/Record/NewRecordView.swift in Sources */,
+				20000000000000000000010A /* Views/Record/RecordDetailView.swift in Sources */,
+				20000000000000000000010B /* Views/List/RecordListView.swift in Sources */,
+				20000000000000000000010C /* Views/Stats/StatsView.swift in Sources */,
+				20000000000000000000010D /* Views/Settings/SettingsView.swift in Sources */,
+				20000000000000000000010E /* Views/Pro/ProUpgradeView.swift in Sources */,
+				20000000000000000000010F /* Extensions/ColorTheme.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -440,18 +443,17 @@
 		200000000000000000000091 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-					ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-					ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-					CODE_SIGN_STYLE = Automatic;
-					CODE_SIGN_ENTITLEMENTS = GymWalkLog/GymWalkLog.entitlements;
-					CURRENT_PROJECT_VERSION = 1;
-					DEVELOPMENT_TEAM = "";
-					VALIDATE_WORKSPACE = NO;
-					GENERATE_INFOPLIST_FILE = NO;
-					INFOPLIST_FILE = GymWalkLog/Info.plist;
-					INFOPLIST_KEY_CFBundleDisplayName = "\U30b8\U30e0\U6b69\U8d70\U30ed\U30b0";
-				INFOPLIST_KEY_NSCameraUsageDescription = "\U30c8\U30ec\U30c3\U30c9\U30df\U30eb\U306e\U753b\U9762\U3092\U64ae\U5f71\U3059\U308b\U305f\U3081\U306b\U4f7f\U7528\U3057\U307e\U3059\U3002";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "\U30c8\U30ec\U30c3\U30c9\U30df\U30eb\U306e\U5199\U771f\U3092\U8a18\U9332\U306b\U8ffd\U52a0\U3059\U308b\U305f\U3081\U306b\U4f7f\U7528\U3057\U307e\U3059\U3002";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = GymWalkLog/GymWalkLog.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3U97PCNG99;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = GymWalkLog/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "ジム歩走ログ";
+				INFOPLIST_KEY_NSCameraUsageDescription = "トレッドミルの画面を撮影するために使用します。";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "トレッドミルの写真を記録に追加するために使用します。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -466,23 +468,24 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
+				VALIDATE_WORKSPACE = NO;
 			};
 			name = Debug;
 		};
 		200000000000000000000092 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-					ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-					ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-					CODE_SIGN_STYLE = Automatic;
-					CODE_SIGN_ENTITLEMENTS = GymWalkLog/GymWalkLog.entitlements;
-					CURRENT_PROJECT_VERSION = 1;
-					DEVELOPMENT_TEAM = "";
-					GENERATE_INFOPLIST_FILE = NO;
-					INFOPLIST_FILE = GymWalkLog/Info.plist;
-					INFOPLIST_KEY_CFBundleDisplayName = "\U30b8\U30e0\U6b69\U8d70\U30ed\U30b0";
-				INFOPLIST_KEY_NSCameraUsageDescription = "\U30c8\U30ec\U30c3\U30c9\U30df\U30eb\U306e\U753b\U9762\U3092\U64ae\U5f71\U3059\U308b\U305f\U3081\U306b\U4f7f\U7528\U3057\U307e\U3059\U3002";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "\U30c8\U30ec\U30c3\U30c9\U30df\U30eb\U306e\U5199\U771f\U3092\U8a18\U9332\U306b\U8ffd\U52a0\U3059\U308b\U305f\U3081\U306b\U4f7f\U7528\U3057\U307e\U3059\U3002";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = GymWalkLog/GymWalkLog.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3U97PCNG99;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = GymWalkLog/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "ジム歩走ログ";
+				INFOPLIST_KEY_NSCameraUsageDescription = "トレッドミルの画面を撮影するために使用します。";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "トレッドミルの写真を記録に追加するために使用します。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -503,11 +506,11 @@
 		300000000000000000000091 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-					ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-					CODE_SIGN_STYLE = Automatic;
-					CODE_SIGN_ENTITLEMENTS = "GymWalkLog Widget/GymWalkLogWidget.entitlements";
-					CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "GymWalkLog Widget/GymWalkLogWidget.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3U97PCNG99;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "GymWalkLog Widget/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -527,11 +530,11 @@
 		300000000000000000000092 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-					ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-					CODE_SIGN_STYLE = Automatic;
-					CODE_SIGN_ENTITLEMENTS = "GymWalkLog Widget/GymWalkLogWidget.entitlements";
-					CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "GymWalkLog Widget/GymWalkLogWidget.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3U97PCNG99;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "GymWalkLog Widget/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;

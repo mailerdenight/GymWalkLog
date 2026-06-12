@@ -8,15 +8,15 @@ struct RecordDetailView: View {
     @Query(sort: \WorkoutRecord.date, order: .reverse) private var records: [WorkoutRecord]
     let record: WorkoutRecord
 
-    @State private var memo: String = ""
     @State private var showDeleteConfirm = false
+    @State private var showEdit = false
 
     var theme: AppTheme { appSettings.theme }
 
     private var dateFormatter: DateFormatter {
         let f = DateFormatter()
         f.locale = Locale(identifier: "ja_JP")
-        f.dateFormat = "yyyy/M/d(EEE) HH:mm"
+        f.dateFormat = "yyyy/M/d(EEE)"
         return f
     }
 
@@ -28,7 +28,9 @@ struct RecordDetailView: View {
                 }
 
                 detailsCard
-                memoCard
+                if let memo = record.memo, !memo.isEmpty {
+                    memoCard(memo)
+                }
 
                 Button(role: .destructive) {
                     showDeleteConfirm = true
@@ -53,11 +55,13 @@ struct RecordDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
-                Button("保存") { saveMemo() }
+                Button("編集") { showEdit = true }
                     .foregroundColor(theme.primaryColor)
             }
         }
-        .onAppear { memo = record.memo ?? "" }
+        .sheet(isPresented: $showEdit) {
+            NewRecordView(record: record)
+        }
         .confirmationDialog("この記録を削除しますか？", isPresented: $showDeleteConfirm, titleVisibility: .visible) {
             Button("削除する", role: .destructive) {
                 modelContext.delete(record)
@@ -93,11 +97,9 @@ struct RecordDetailView: View {
                 Divider().padding(.leading, 52)
                 detailRow(icon: "flame", label: "消費カロリー", value: "\(Int(kcal)) kcal")
             }
-            if let pace = record.paceMinPerKm {
+            if let speed = record.averageSpeedKmh {
                 Divider().padding(.leading, 52)
-                let mins = Int(pace)
-                let secs = Int((pace - Double(mins)) * 60)
-                detailRow(icon: "speedometer", label: "平均ペース", value: String(format: "%d:%02d /km", mins, secs))
+                detailRow(icon: "speedometer", label: "平均速度", value: String(format: "%.1f km/h", speed))
             }
         }
         .background(theme.cardColor)
@@ -122,15 +124,16 @@ struct RecordDetailView: View {
         .padding(.vertical, 14)
     }
 
-    private var memoCard: some View {
+    private func memoCard(_ memo: String) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("メモ（任意）")
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
-            TextField("今日の気分や一言をメモできます", text: $memo, axis: .vertical)
-                .lineLimit(3...8)
+            Text(memo)
+                .font(.subheadline)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 16)
                 .padding(.bottom, 12)
         }
@@ -139,8 +142,4 @@ struct RecordDetailView: View {
         .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
     }
 
-    private func saveMemo() {
-        record.memo = memo.isEmpty ? nil : memo
-        dismiss()
-    }
 }

@@ -3,6 +3,8 @@ import SwiftData
 import PhotosUI
 
 struct NewRecordView: View {
+    let editingRecord: WorkoutRecord?
+
     @EnvironmentObject var appSettings: AppSettings
     @EnvironmentObject var purchaseManager: PurchaseManager
     @Environment(\.modelContext) private var modelContext
@@ -10,7 +12,7 @@ struct NewRecordView: View {
     @Query(sort: \WorkoutRecord.date, order: .reverse) private var records: [WorkoutRecord]
 
     @State private var date = Date()
-    @State private var startTime = Date()
+    @State private var endTime = Date()
     @State private var durationHoursText = "0"
     @State private var durationMinutesText = "0"
     @State private var distanceText = ""
@@ -18,31 +20,49 @@ struct NewRecordView: View {
     @State private var memo = ""
     @State private var selectedPhotos: [PhotosPickerItem] = []
     @State private var photoImages: [UIImage] = []
+    @State private var pendingPhotoImages: [UIImage] = []
     @State private var showProPrompt = false
-    @State private var showPhotoSource = false
     @State private var showCamera = false
     @State private var isAnalyzing = false
     @State private var ocrBannerText: String? = nil
     @State private var lastOCRResult: OCRResult? = nil
     @State private var validationMessage: String? = nil
+    @State private var didLoadInitialValues = false
+
+    init(record: WorkoutRecord? = nil) {
+        self.editingRecord = record
+    }
 
     var theme: AppTheme { appSettings.theme }
 
     private var isAtFreeLimit: Bool {
-        !appSettings.isPro && records.count >= 30
+        editingRecord == nil && !appSettings.isPro && records.count >= 30
     }
 
     private var totalDurationSeconds: Int {
-        (Int(durationHoursText) ?? 0) * 3600 + (Int(durationMinutesText) ?? 0) * 60
+        durationSeconds(hoursText: durationHoursText, minutesText: durationMinutesText)
     }
 
-    private var calculatedEndTime: Date {
-        startTime.addingTimeInterval(TimeInterval(totalDurationSeconds))
+    private var normalizedEndTime: Date {
+        combinedDate(date, withTimeFrom: endTime)
+    }
+
+    private var calculatedStartTime: Date {
+        normalizedEndTime.addingTimeInterval(-TimeInterval(totalDurationSeconds))
+    }
+
+    private var inputDistanceKm: Double? {
+        normalizedDecimal(distanceText)
+    }
+
+    private var averageSpeedKmh: Double? {
+        guard let km = inputDistanceKm, km > 0, totalDurationSeconds > 0 else { return nil }
+        return km / (Double(totalDurationSeconds) / 3600.0)
     }
 
     // 距離・時間・体重から推定カロリーを計算
     private var estimatedCalories: Int? {
-        guard let km = Double(distanceText), km > 0,
+        guard let km = normalizedDecimal(distanceText), km > 0,
               totalDurationSeconds > 0 else { return nil }
         let hours = Double(totalDurationSeconds) / 3600
         let paceMinPerKm = hours * 60 / km
@@ -81,8 +101,8 @@ struct NewRecordView: View {
                     }
                     if let banner = ocrBannerText {
                         HStack(spacing: 8) {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(theme.primaryColor)
+                            Image(systemName: banner.contains("読み取れません") || banner.contains("判定できません") ? "exclamationmark.circle.fill" : "checkmark.circle.fill")
+                                .foregroundColor(banner.contains("読み取れません") || banner.contains("判定できません") ? .orange : theme.primaryColor)
                             Text(banner).font(.caption).foregroundColor(.secondary)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading).padding(12)
@@ -110,7 +130,7 @@ struct NewRecordView: View {
                 .padding(16)
             }
             .background(theme.backgroundColor.ignoresSafeArea())
-            .navigationTitle("新しい記録")
+            .navigationTitle(editingRecord == nil ? "新しい記録" : "記録を編集")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -119,6 +139,7 @@ struct NewRecordView: View {
             }
         }
         .sheet(isPresented: $showProPrompt) { ProUpgradeView() }
+        .onAppear { loadInitialValuesIfNeeded() }
     }
 
     // MARK: - 基本情報
@@ -148,7 +169,7 @@ struct NewRecordView: View {
                         .multilineTextAlignment(.trailing)
                         .frame(width: 36)
                         .onChange(of: durationHoursText) { _, v in
-                            durationHoursText = String(v.prefix(2).filter(\.isNumber))
+                            durationHoursText = String(normalizedDigits(v).prefix(2))
                         }
                     Text("時間")
                         .font(.subheadline).foregroundColor(.secondary)
@@ -157,7 +178,7 @@ struct NewRecordView: View {
                         .multilineTextAlignment(.trailing)
                         .frame(width: 36)
                         .onChange(of: durationMinutesText) { _, v in
-                            let n = Int(v.filter(\.isNumber)) ?? 0
+                            let n = Int(normalizedDigits(v)) ?? 0
                             durationMinutesText = String(min(n, 59))
                         }
                     Text("分")
@@ -175,6 +196,25 @@ struct NewRecordView: View {
                     .frame(width: 100)
             }
             Divider().padding(.leading, 16)
+
+            if let speed = averageSpeedKmh {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("平均速度")
+                            .font(.subheadline)
+                        Spacer()
+                        Text(String(format: "%.1f km/h", speed))
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(theme.primaryColor)
+                    }
+                    Text("距離(km) ÷ 時間(h) で計算しています。例: 3.0km ÷ 0.5時間 = 6.0km/h")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+                .padding(.horizontal, 16).padding(.vertical, 12)
+                Divider().padding(.leading, 16)
+            }
 
             // カロリー + 自動推定
             VStack(spacing: 0) {
@@ -207,19 +247,19 @@ struct NewRecordView: View {
             }
             Divider().padding(.leading, 16)
 
-            // 開始時刻
-            formRow(label: "開始時刻") {
-                DatePicker("", selection: $startTime, displayedComponents: .hourAndMinute)
+            // 終了時刻
+            formRow(label: "終了時刻") {
+                DatePicker("", selection: $endTime, displayedComponents: .hourAndMinute)
                     .labelsHidden()
             }
             Divider().padding(.leading, 16)
 
-            // 終了時刻（自動計算）
+            // 開始時刻（自動計算）
             HStack {
-                Text("終了時刻").font(.subheadline)
+                Text("開始時刻").font(.subheadline)
                 Spacer()
                 HStack(spacing: 4) {
-                    Text(timeFmt.string(from: calculatedEndTime))
+                    Text(timeFmt.string(from: calculatedStartTime))
                         .font(.subheadline).foregroundColor(.secondary)
                     Text("（自動）")
                         .font(.caption2).foregroundColor(theme.primaryColor.opacity(0.7))
@@ -247,82 +287,160 @@ struct NewRecordView: View {
 
     private var photoSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("写真（最大3枚）")
-                    .font(.subheadline).fontWeight(.medium)
-                Spacer()
-                Text("撮影で数値を自動読み取り")
-                    .font(.caption2).foregroundColor(theme.primaryColor.opacity(0.8))
+            VStack(alignment: .leading, spacing: 4) {
+                Text("トレッドミルの画面を撮影してください")
+                    .font(.headline)
+                Text("カメラで撮った写真は、記録に追加されてiPhoneの写真アプリにも保存されます。")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
 
+            VStack(spacing: 8) {
+                checklistRow("時間・距離・カロリーが写っている")
+                checklistRow("数字がはっきり見える")
+                checklistRow("画面全体が入るように四角の上へ合わせる")
+            }
+            .padding(12)
+            .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+
             HStack(spacing: 12) {
-                ForEach(Array(photoImages.enumerated()), id: \.offset) { index, image in
-                    ZStack(alignment: .topTrailing) {
+                if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                    Button {
+                        showCamera = true
+                    } label: {
+                        photoActionLabel(title: "カメラ", icon: "camera.fill", filled: true)
+                    }
+                }
+
+                PhotosPicker(
+                    selection: $selectedPhotos,
+                    matching: .images
+                ) {
+                    photoActionLabel(title: "アルバム", icon: "photo.on.rectangle", filled: !UIImagePickerController.isSourceTypeAvailable(.camera))
+                }
+                .disabled(isAnalyzing)
+                .onChange(of: selectedPhotos) { _, items in
+                    Task {
+                        var newImages: [UIImage] = []
+                        for item in items {
+                            if let data = try? await item.loadTransferable(type: Data.self),
+                               let img = UIImage(data: data) {
+                                newImages.append(img)
+                            }
+                        }
+                        selectedPhotos = []
+                        startPhotoAnalysis(with: newImages)
+                    }
+                }
+
+                .sheet(isPresented: $showCamera) {
+                    CameraView { image in
+                        startPhotoAnalysis(with: [image])
+                    }
+                    .ignoresSafeArea()
+                }
+            }
+            .disabled(isAnalyzing)
+            .opacity(isAnalyzing ? 0.72 : 1.0)
+
+            ZStack(alignment: .topTrailing) {
+                Group {
+                    if let image = photoImages.first {
                         Image(uiImage: image)
-                            .resizable().scaledToFill()
-                            .frame(width: 80, height: 80)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                        Button {
-                            photoImages.remove(at: index)
-                        } label: {
-                            Image(systemName: "xmark.circle.fill")
-                                .foregroundColor(.white)
-                                .background(Color.black.opacity(0.5).clipShape(Circle()))
-                                .padding(4)
+                            .resizable()
+                            .scaledToFill()
+                    } else {
+                        Group {
+                            if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                                Button {
+                                    showCamera = true
+                                } label: {
+                                    placeholderCaptureView
+                                }
+                                .buttonStyle(.plain)
+                            } else {
+                                placeholderCaptureView
+                            }
+                        }
+                    }
+                }
+                .frame(height: 260)
+                .clipShape(RoundedRectangle(cornerRadius: 18))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 18)
+                        .stroke(theme.primaryColor.opacity(photoImages.isEmpty ? 0.22 : 0.0), style: StrokeStyle(lineWidth: 1.5, dash: photoImages.isEmpty ? [6] : []))
+                )
+                .overlay {
+                    if isAnalyzing {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 18)
+                                .fill(.ultraThinMaterial)
+
+                            VStack(spacing: 10) {
+                                ProgressView()
+                                    .tint(theme.primaryColor)
+                                    .scaleEffect(1.15)
+                                Text("解析中…")
+                                    .font(.headline)
+                                    .fontWeight(.semibold)
+                                Text("写真を反映する前にトレッドミルの数値を読み取っています")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            .padding(20)
                         }
                     }
                 }
 
-                if photoImages.count < 3 {
-                    Button { showPhotoSource = true } label: {
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(theme.primaryColor.opacity(0.4),
-                                    style: StrokeStyle(lineWidth: 1.5, dash: [5]))
-                            .frame(width: 80, height: 80)
-                            .overlay(
-                                VStack(spacing: 4) {
-                                    Image(systemName: "camera")
-                                        .font(.system(size: 22))
-                                        .foregroundColor(theme.primaryColor)
-                                    Text("追加")
-                                        .font(.caption2).foregroundColor(theme.primaryColor)
-                                }
-                            )
+                if !photoImages.isEmpty {
+                    Button {
+                        photoImages.removeFirst()
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.title3)
+                            .foregroundColor(.white)
+                            .background(Color.black.opacity(0.45).clipShape(Circle()))
+                            .padding(10)
                     }
-                    .confirmationDialog("写真を追加", isPresented: $showPhotoSource) {
-                        if UIImagePickerController.isSourceTypeAvailable(.camera) {
-                            Button("カメラで撮影") { showCamera = true }
-                        }
-                        PhotosPicker(
-                            selection: $selectedPhotos,
-                            maxSelectionCount: 3 - photoImages.count,
-                            matching: .images
-                        ) {
-                            Text("アルバムから選ぶ")
-                        }
-                        .onChange(of: selectedPhotos) { _, items in
-                            Task {
-                                var newImages: [UIImage] = []
-                                for item in items {
-                                    if let data = try? await item.loadTransferable(type: Data.self),
-                                       let img = UIImage(data: data) {
-                                        photoImages.append(img)
-                                        newImages.append(img)
-                                    }
+                }
+            }
+
+            if !photoImages.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 10) {
+                        ForEach(Array(photoImages.enumerated()), id: \.offset) { index, image in
+                            ZStack(alignment: .topTrailing) {
+                                Button {
+                                    guard index != 0 else { return }
+                                    let selected = photoImages.remove(at: index)
+                                    photoImages.insert(selected, at: 0)
+                                } label: {
+                                    Image(uiImage: image)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 72, height: 72)
+                                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 12)
+                                                .stroke(index == 0 ? theme.primaryColor : Color.clear, lineWidth: 2)
+                                        )
                                 }
-                                selectedPhotos = []
-                                if let first = newImages.first { analyzePhoto(first) }
+                                .buttonStyle(.plain)
+
+                                Button {
+                                    photoImages.remove(at: index)
+                                } label: {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .font(.caption)
+                                        .foregroundColor(.white)
+                                        .background(Color.black.opacity(0.45).clipShape(Circle()))
+                                }
+                                .offset(x: 4, y: -4)
                             }
                         }
-                        Button("キャンセル", role: .cancel) {}
                     }
-                    .sheet(isPresented: $showCamera) {
-                        CameraView { image in
-                            photoImages.append(image)
-                            analyzePhoto(image)
-                        }
-                        .ignoresSafeArea()
-                    }
+                    .padding(.horizontal, 1)
                 }
             }
         }
@@ -332,17 +450,57 @@ struct NewRecordView: View {
         .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
     }
 
+    private func photoActionLabel(title: String, icon: String, filled: Bool) -> some View {
+        Label(title, systemImage: icon)
+            .font(.subheadline)
+            .fontWeight(.semibold)
+            .foregroundColor(filled ? .white : theme.primaryColor)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background(filled ? theme.primaryColor : theme.primaryColor.opacity(0.10))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    private var placeholderCaptureView: some View {
+        VStack(spacing: 10) {
+            Image(systemName: "camera.viewfinder")
+                .font(.system(size: 38))
+                .foregroundColor(theme.primaryColor)
+            Text("画面全体が入るように撮影")
+                .font(.subheadline)
+                .fontWeight(.medium)
+            Text("四角の上に合わせて追加すると自動で読み取りを試します")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(theme.primaryColor.opacity(0.06))
+    }
+
+    private func checklistRow(_ text: String) -> some View {
+        HStack(spacing: 8) {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundColor(theme.primaryColor)
+            Text(text)
+                .font(.caption)
+                .fontWeight(.medium)
+            Spacer()
+        }
+    }
+
     // MARK: - 保存ボタン
 
     private var saveButton: some View {
         Button { saveRecord() } label: {
-            Text(isAtFreeLimit ? "Proで記録を続ける" : "保存する")
+            Text(isAnalyzing ? "解析中…" : isAtFreeLimit ? "Proで記録を続ける" : editingRecord == nil ? "保存する" : "更新する")
                 .font(.headline).foregroundColor(.white)
                 .frame(maxWidth: .infinity).padding(.vertical, 16)
                 .background(theme.primaryColor)
                 .clipShape(RoundedRectangle(cornerRadius: 14))
                 .shadow(color: theme.primaryColor.opacity(0.3), radius: 6, y: 3)
         }
+        .disabled(isAnalyzing)
+        .opacity(isAnalyzing ? 0.7 : 1.0)
     }
 
     // MARK: - 無料上限バナー
@@ -361,7 +519,7 @@ struct NewRecordView: View {
                     .background(theme.primaryColor)
                     .clipShape(RoundedRectangle(cornerRadius: 16))
             }
-            Button("あとで") { }.font(.subheadline).foregroundColor(.secondary)
+            Button("あとで") { dismiss() }.font(.subheadline).foregroundColor(.secondary)
         }
         .padding(20).background(theme.cardColor)
         .clipShape(RoundedRectangle(cornerRadius: 16))
@@ -379,23 +537,67 @@ struct NewRecordView: View {
         .padding(.horizontal, 16).padding(.vertical, 12)
     }
 
+    private func durationSeconds(hoursText: String, minutesText: String) -> Int {
+        let hours = Int(normalizedDigits(hoursText)) ?? 0
+        let minutes = min(Int(normalizedDigits(minutesText)) ?? 0, 59)
+        return hours * 3600 + minutes * 60
+    }
+
+    private func normalizedDigits(_ text: String) -> String {
+        text.applyingTransform(.fullwidthToHalfwidth, reverse: false)?
+            .filter(\.isNumber) ?? text.filter(\.isNumber)
+    }
+
+    private func normalizedDecimal(_ text: String) -> Double? {
+        let normalized = text
+            .applyingTransform(.fullwidthToHalfwidth, reverse: false)?
+            .replacingOccurrences(of: ",", with: ".")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            ?? text.replacingOccurrences(of: ",", with: ".")
+        return Double(normalized)
+    }
+
+    private func combinedDate(_ date: Date, withTimeFrom time: Date) -> Date {
+        var dateComponents = Calendar.current.dateComponents([.year, .month, .day], from: date)
+        let timeComponents = Calendar.current.dateComponents([.hour, .minute], from: time)
+        dateComponents.hour = timeComponents.hour
+        dateComponents.minute = timeComponents.minute
+        return Calendar.current.date(from: dateComponents) ?? date
+    }
+
     // MARK: - OCR
+
+    private func startPhotoAnalysis(with images: [UIImage]) {
+        guard !images.isEmpty, !isAnalyzing else { return }
+        pendingPhotoImages = images
+        analyzePhoto(images[0])
+    }
 
     private func analyzePhoto(_ image: UIImage) {
         guard !isAnalyzing else { return }
         isAnalyzing = true
         ocrBannerText = nil
         Task {
+            let analysisStart = ContinuousClock.now
             let profile = TreadmillProfile.load()
             let result = await PhotoOCRManager.extractWorkoutData(from: image, profile: profile)
+            let minimumDisplayTime: Duration = .seconds(1.2)
+            let elapsed = analysisStart.duration(to: .now)
+            if elapsed < minimumDisplayTime {
+                try? await Task.sleep(for: minimumDisplayTime - elapsed)
+            }
             await MainActor.run {
                 isAnalyzing = false
+                if !pendingPhotoImages.isEmpty {
+                    photoImages = pendingPhotoImages + photoImages
+                    pendingPhotoImages.removeAll()
+                }
                 lastOCRResult = result
                 var filled: [String] = []
                 if let secs = result.durationSeconds, totalDurationSeconds == 0 {
                     durationHoursText   = "\(secs / 3600)"
                     durationMinutesText = "\((secs % 3600) / 60)"
-                    startTime = Date().addingTimeInterval(-TimeInterval(secs))
+                    endTime = Date()
                     filled.append("時間")
                 }
                 if let km = result.distanceKm, distanceText.isEmpty {
@@ -413,8 +615,45 @@ struct NewRecordView: View {
                         try? await Task.sleep(for: .seconds(4))
                         await MainActor.run { ocrBannerText = nil }
                     }
+                } else if result.recognizedTextCount > 0 {
+                    ocrBannerText = "文字は検出しましたが、距離・時間・カロリーとして判定できませんでした。正面から明るく撮り直すか、手入力してください。"
+                } else {
+                    ocrBannerText = "文字を検出できませんでした。画面全体が入るように明るく撮り直すか、手入力してください。"
                 }
             }
+        }
+    }
+
+    private func loadInitialValuesIfNeeded() {
+        guard !didLoadInitialValues, let record = editingRecord else { return }
+        didLoadInitialValues = true
+
+        date = record.date
+        endTime = record.endTime ?? record.date
+        durationHoursText = "\(record.durationSeconds / 3600)"
+        durationMinutesText = "\((record.durationSeconds % 3600) / 60)"
+        distanceText = String(format: "%.2f", record.distanceKm)
+        if let calories = record.caloriesKcal {
+            caloriesText = "\(Int(calories.rounded()))"
+        }
+        memo = record.memo ?? ""
+        photoImages = record.photoDataList.compactMap { UIImage(data: $0) }
+    }
+
+    private func replaceRecordPhotos(for record: WorkoutRecord) {
+        for photo in record.photos {
+            modelContext.delete(photo)
+        }
+        record.photos.removeAll()
+        record.photoData1 = nil
+        record.photoData2 = nil
+        record.photoData3 = nil
+
+        for (index, image) in photoImages.enumerated() {
+            guard let data = image.jpegData(compressionQuality: 0.8) else { continue }
+            let photo = WorkoutPhoto(data: data, orderIndex: index, record: record)
+            modelContext.insert(photo)
+            record.photos.append(photo)
         }
     }
 
@@ -424,40 +663,45 @@ struct NewRecordView: View {
         validationMessage = nil
         guard !isAtFreeLimit else {
             showProPrompt = true
-            validationMessage = "31件目以降の記録にはProが必要です。"
             return
         }
         guard totalDurationSeconds > 0 else {
             validationMessage = "時間を入力してください。"
             return
         }
-        guard let distance = Double(distanceText), distance > 0 else {
+        guard let distance = normalizedDecimal(distanceText), distance > 0 else {
             validationMessage = "距離を入力してください。"
             return
         }
-        let calories = Double(caloriesText)
+        let calories = normalizedDecimal(caloriesText)
         if let ocr = lastOCRResult, !ocr.isEmpty {
             var profile = TreadmillProfile.load()
             profile.learn(distanceBox: ocr.distanceBox, durationBox: ocr.durationBox, caloriesBox: ocr.caloriesBox)
             profile.save()
         }
-        let record = WorkoutRecord(
-            date: date,
-            startTime: startTime,
-            endTime: calculatedEndTime,
-            durationSeconds: totalDurationSeconds,
-            distanceKm: distance,
-            caloriesKcal: calories,
-            memo: memo.isEmpty ? nil : memo,
-            photoData1: photoImages.count > 0 ? photoImages[0].jpegData(compressionQuality: 0.8) : nil,
-            photoData2: photoImages.count > 1 ? photoImages[1].jpegData(compressionQuality: 0.8) : nil,
-            photoData3: photoImages.count > 2 ? photoImages[2].jpegData(compressionQuality: 0.8) : nil,
-            workoutType: "walk"
-        )
-        modelContext.insert(record)
-        WidgetDataManager.update(records: [record] + records)
+        let target = editingRecord ?? WorkoutRecord()
+        target.date = Calendar.current.startOfDay(for: date)
+        target.startTime = calculatedStartTime
+        target.endTime = normalizedEndTime
+        target.durationSeconds = totalDurationSeconds
+        target.distanceKm = distance
+        target.caloriesKcal = calories
+        target.memo = memo.isEmpty ? nil : memo
+        target.workoutType = editingRecord?.workoutType ?? "walk"
+
+        if editingRecord == nil {
+            modelContext.insert(target)
+        }
+        replaceRecordPhotos(for: target)
+        do {
+            try modelContext.save()
+        } catch {
+            validationMessage = "保存できませんでした。もう一度お試しください。"
+            return
+        }
+        WidgetDataManager.update(records: editingRecord == nil ? [target] + records : records)
         if appSettings.notificationSetting == .gentle {
-            NotificationManager.shared.rescheduleAbsenceReminder(lastWorkoutDate: date)
+            NotificationManager.shared.rescheduleAbsenceReminder(lastWorkoutDate: normalizedEndTime)
         }
         dismiss()
     }

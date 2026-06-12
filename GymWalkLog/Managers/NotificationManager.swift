@@ -80,8 +80,8 @@ class NotificationManager {
 
     private func scheduleMonthlySummary(center: UNUserNotificationCenter) {
         let content = UNMutableNotificationContent()
-        content.title = "今月もよくがんばりました ✨"
-        content.body = "今月の記録を確認してみましょう。小さな積み重ねが、続けた証です。"
+        content.title = "先月の記録をふり返りましょう ✨"
+        content.body = "積み重ねた記録を確認してみましょう。小さな一歩が、続けた証です。"
         content.sound = .default
 
         var components = DateComponents()
