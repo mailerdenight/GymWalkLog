@@ -187,8 +187,6 @@ enum PhotoOCRManager {
     }
 
     private static func extractLabeledCaloriesAcrossCandidates(from candidates: [TextCandidate]) -> (value: Double, box: CGRect)? {
-        let labelPattern = "(?:^|[^a-zA-Z])(?:ca[1lI]ories|ca[1lI]orie|ca[1lI]s|kca[1lI]|ca[1lI]\\.?)?(?:カロリー)?(?:[^a-zA-Z]|$)"
-
         for label in candidates {
             guard matches(pattern: "(?:ca[1lI]ories|ca[1lI]orie|ca[1lI]s|kca[1lI]|ca[1lI]\\.?)|カロリー", in: label.text) else { continue }
 
