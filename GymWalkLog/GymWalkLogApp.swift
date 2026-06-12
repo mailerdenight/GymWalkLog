@@ -10,7 +10,7 @@ struct GymWalkLogApp: App {
 
     init() {
         let settings = AppSettings()
-        let persistence = Self.makeModelContainer()
+        let persistence = Self.makeModelContainer(isPro: settings.isPro)
         _appSettings = StateObject(wrappedValue: settings)
         _purchaseManager = StateObject(wrappedValue: PurchaseManager(appSettings: settings))
         _modelContainer = State(initialValue: persistence.container)
@@ -18,14 +18,32 @@ struct GymWalkLogApp: App {
         _ = settings.firstLaunchDate
     }
 
-    private static func makeModelContainer() -> PersistenceResult {
+    private static func makeModelContainer(isPro: Bool) -> PersistenceResult {
         let schema = Schema([WorkoutRecord.self, WorkoutPhoto.self])
+        if isPro {
+            let cloudConfig = ModelConfiguration(
+                schema: schema,
+                isStoredInMemoryOnly: false,
+                cloudKitDatabase: .automatic
+            )
+            do {
+                let container = try ModelContainer(for: schema, configurations: [cloudConfig])
+                return PersistenceResult(container: container, status: .cloudSynced)
+            } catch {
+                return makeLocalModelContainer(
+                    schema: schema,
+                    fallbackReason: "iCloud同期を開始できなかったため、この端末内の保存に切り替えました。iCloud設定やネットワーク状態を確認してください。",
+                    originalError: error
+                )
+            }
+        }
         return makeLocalModelContainer(schema: schema)
     }
 
     private static func makeLocalModelContainer(
         schema: Schema,
-        fallbackReason: String? = nil
+        fallbackReason: String? = nil,
+        originalError: Error? = nil
     ) -> PersistenceResult {
         let config = ModelConfiguration(
             schema: schema,
@@ -41,13 +59,14 @@ struct GymWalkLogApp: App {
         } catch {
             let message: String
             if fallbackReason != nil {
-                message = "保存を開始できなかったため、一時保存モードで起動しました。アプリを終了すると、この起動中に追加した記録は残りません。空き容量を確認して、アプリを再起動してください。"
+                message = "iCloud同期と端末内の保存を開始できなかったため、一時保存モードで起動しました。アプリを終了すると、この起動中に追加した記録は残りません。iCloud設定や空き容量を確認して、アプリを再起動してください。"
             } else {
                 message = "端末内の保存を開始できなかったため、一時保存モードで起動しました。アプリを終了すると、この起動中に追加した記録は残りません。空き容量を確認して、アプリを再起動してください。"
             }
             return makeInMemoryModelContainer(
                 schema: schema,
                 fallbackMessage: message,
+                cloudError: originalError,
                 localError: error
             )
         }
@@ -56,6 +75,7 @@ struct GymWalkLogApp: App {
     private static func makeInMemoryModelContainer(
         schema: Schema,
         fallbackMessage: String,
+        cloudError: Error?,
         localError: Error
     ) -> PersistenceResult {
         let config = ModelConfiguration(
@@ -67,8 +87,9 @@ struct GymWalkLogApp: App {
             let container = try ModelContainer(for: schema, configurations: [config])
             return PersistenceResult(container: container, status: .localFallback(message: fallbackMessage))
         } catch {
+            let cloudErrorDescription = cloudError.map { "\nCloudKit error: \($0.localizedDescription)" } ?? ""
             fatalError(
-                "ModelContainerの作成に失敗しました。\nLocal error: \(localError.localizedDescription)\nIn-memory error: \(error.localizedDescription)"
+                "ModelContainerの作成に失敗しました。\(cloudErrorDescription)\nLocal error: \(localError.localizedDescription)\nIn-memory error: \(error.localizedDescription)"
             )
         }
     }
@@ -79,7 +100,13 @@ struct GymWalkLogApp: App {
                 .environmentObject(appSettings)
                 .environmentObject(purchaseManager)
                 .modelContainer(modelContainer)
+                .id(appSettings.isPro)
                 .preferredColorScheme(appSettings.preferredColorScheme)
+                .onChange(of: appSettings.isPro) { _, isPro in
+                    let persistence = Self.makeModelContainer(isPro: isPro)
+                    modelContainer = persistence.container
+                    persistenceStatus = persistence.status
+                }
                 .alert("保存を開始できませんでした", isPresented: fallbackAlertBinding) {
                     Button("OK", role: .cancel) {
                         persistenceStatus = .localOnly
@@ -104,6 +131,7 @@ private struct PersistenceResult {
 }
 
 private enum PersistenceStatus: Equatable {
+    case cloudSynced
     case localOnly
     case localFallback(message: String)
 

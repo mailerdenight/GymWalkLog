@@ -63,6 +63,7 @@ struct ProUpgradeView: View {
                 featureRow(icon: "chart.bar.fill", title: "月別・年別のレポートが見える", desc: "変化の流れをグラフで確認できます")
                 featureRow(icon: "photo.on.rectangle", title: "写真を何枚でも保存できる", desc: "トレッドミル画面もまとめて残せます")
                 featureRow(icon: "doc.text", title: "PDFとCSVで出力できる", desc: "自分の記録を手元に残せます")
+                featureRow(icon: "icloud", title: "iCloudで自動同期できる", desc: "Proなら複数端末でも同じ記録を扱えます")
                 featureRow(icon: "list.bullet.rectangle", title: "全履歴を一覧で振り返れる", desc: "長く続けた分まで見返せます")
             }
         }

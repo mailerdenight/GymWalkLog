@@ -302,7 +302,7 @@ struct SettingsView: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Proについて（買い切り \(purchaseManager.priceString)）")
                                 .font(.subheadline)
-                            Text("31件目以降の記録 / グラフ / 写真保存 / PDF・CSV出力")
+                            Text("31件目以降の記録 / グラフ / 写真無制限 / PDF・CSV出力 / iCloud同期")
                                 .font(.caption2)
                                 .foregroundColor(.secondary)
                         }
@@ -513,9 +513,9 @@ struct SettingsView: View {
     private var helpView: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                helpItem(title: "記録の仕方", body: "+ ボタンをタップして、距離・時間・カロリーを入力し保存します。写真は何枚でも添付できます。")
+                helpItem(title: "記録の仕方", body: "+ ボタンをタップして、距離・時間・カロリーを入力し保存します。写真は無料版で3枚まで、Proで枚数制限なく添付できます。")
                 helpItem(title: "無料で使える機能", body: "30件までの記録、カレンダー、今月のレポート、連続記録を無料でご利用いただけます。記録一覧は直近30件を表示します。")
-                helpItem(title: "Proとは", body: "買い切り\(purchaseManager.priceString)で、31件目以降の記録・グラフ・写真保存・PDF/CSVエクスポートが使えます。サブスクリプションはありません。")
+                helpItem(title: "Proとは", body: "買い切り\(purchaseManager.priceString)で、31件目以降の記録・グラフ・写真無制限・PDF/CSVエクスポート・iCloud同期が使えます。サブスクリプションはありません。")
                 helpItem(title: "このアプリの考え方", body: "がんばりすぎなくていい。小さな一歩を大切に。自分のペースで続けられることが大事です。")
             }
             .padding()

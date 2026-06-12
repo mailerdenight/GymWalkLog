@@ -60,6 +60,27 @@ struct NewRecordView: View {
         return km / (Double(totalDurationSeconds) / 3600.0)
     }
 
+    private var photoLimit: Int? {
+        if appSettings.isPro { return nil }
+        return max(3, editingRecord?.photoDataList.count ?? 0)
+    }
+
+    private var remainingPhotoSlots: Int? {
+        guard let photoLimit else { return nil }
+        return max(photoLimit - photoImages.count, 0)
+    }
+
+    private var canAddMorePhotos: Bool {
+        remainingPhotoSlots ?? 1 > 0
+    }
+
+    private var photoLimitDescription: String {
+        if appSettings.isPro {
+            return "カメラで撮った写真は、記録に追加されてiPhoneの写真アプリにも保存されます。"
+        }
+        return "無料版は写真3枚までです。Proにすると枚数制限なく保存できます。"
+    }
+
     // 距離・時間・体重から推定カロリーを計算
     private var estimatedCalories: Int? {
         guard let km = normalizedDecimal(distanceText), km > 0,
@@ -290,7 +311,7 @@ struct NewRecordView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("トレッドミルの画面を撮影してください")
                     .font(.headline)
-                Text("カメラで撮った写真は、記録に追加されてiPhoneの写真アプリにも保存されます。")
+                Text(photoLimitDescription)
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
@@ -307,7 +328,11 @@ struct NewRecordView: View {
             HStack(spacing: 12) {
                 if UIImagePickerController.isSourceTypeAvailable(.camera) {
                     Button {
-                        showCamera = true
+                        if canAddMorePhotos {
+                            showCamera = true
+                        } else {
+                            showProPrompt = true
+                        }
                     } label: {
                         photoActionLabel(title: "カメラ", icon: "camera.fill", filled: true)
                     }
@@ -443,6 +468,16 @@ struct NewRecordView: View {
                     .padding(.horizontal, 1)
                 }
             }
+
+            if let remainingPhotoSlots, remainingPhotoSlots == 0 {
+                HStack(spacing: 8) {
+                    Image(systemName: "lock.fill")
+                        .foregroundColor(theme.primaryColor)
+                    Text("無料版の写真は3枚までです。続きを保存するにはProをご利用ください。")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
         }
         .padding(16)
         .background(theme.cardColor)
@@ -569,8 +604,24 @@ struct NewRecordView: View {
 
     private func startPhotoAnalysis(with images: [UIImage]) {
         guard !images.isEmpty, !isAnalyzing else { return }
-        pendingPhotoImages = images
-        analyzePhoto(images[0])
+        let acceptedImages: [UIImage]
+        if let remainingPhotoSlots {
+            guard remainingPhotoSlots > 0 else {
+                validationMessage = "無料版の写真は3枚までです。"
+                showProPrompt = true
+                return
+            }
+            acceptedImages = Array(images.prefix(remainingPhotoSlots))
+            if acceptedImages.count < images.count {
+                validationMessage = "無料版では写真は3枚まで保存できます。追加分は反映されません。"
+                showProPrompt = true
+            }
+        } else {
+            acceptedImages = images
+        }
+        guard !acceptedImages.isEmpty else { return }
+        pendingPhotoImages = acceptedImages
+        analyzePhoto(acceptedImages[0])
     }
 
     private func analyzePhoto(_ image: UIImage) {
