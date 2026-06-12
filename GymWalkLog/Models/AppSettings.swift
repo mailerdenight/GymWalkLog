@@ -1,6 +1,28 @@
 import SwiftUI
 import Combine
 
+enum AppBrightness: String, CaseIterable {
+    case system = "system"
+    case light = "light"
+    case dark = "dark"
+
+    var displayName: String {
+        switch self {
+        case .system: return "システム"
+        case .light: return "ライト"
+        case .dark: return "ダーク"
+        }
+    }
+
+    var preferredColorScheme: ColorScheme? {
+        switch self {
+        case .system: return nil
+        case .light:  return .light
+        case .dark:   return .dark
+        }
+    }
+}
+
 enum NotificationSetting: String, CaseIterable {
     case off = "off"
     case gentle = "gentle"
@@ -34,6 +56,9 @@ class AppSettings: ObservableObject {
     @AppStorage("hasSeenOnboarding") var hasSeenOnboarding: Bool = false {
         willSet { objectWillChange.send() }
     }
+    @AppStorage("brightness") var brightnessRaw: String = AppBrightness.system.rawValue {
+        willSet { objectWillChange.send() }
+    }
     @AppStorage("bodyWeightKg") var bodyWeightKg: Double = 65.0 {
         willSet { objectWillChange.send() }
     }
@@ -49,6 +74,15 @@ class AppSettings: ObservableObject {
     var notificationSetting: NotificationSetting {
         get { NotificationSetting(rawValue: notificationRaw) ?? .off }
         set { notificationRaw = newValue.rawValue }
+    }
+
+    var brightness: AppBrightness {
+        get { AppBrightness(rawValue: brightnessRaw) ?? .system }
+        set { brightnessRaw = newValue.rawValue }
+    }
+
+    var preferredColorScheme: ColorScheme? {
+        brightness.preferredColorScheme
     }
 
     var firstLaunchDate: Date {

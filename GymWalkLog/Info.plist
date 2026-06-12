@@ -37,6 +37,12 @@
 	<string>トレッドミルの画面を撮影するために使用します。</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>トレッドミルの写真を記録に追加するために使用します。</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>撮影した写真をiPhoneの写真アプリにも保存するために使用します。</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

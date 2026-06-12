@@ -3,7 +3,7 @@ import SwiftData
 
 @main
 struct GymWalkLogApp: App {
-    @StateObject private var appSettings = AppSettings()
+    @StateObject private var appSettings: AppSettings
     @StateObject private var purchaseManager: PurchaseManager
     @State private var modelContainer: ModelContainer
     @State private var persistenceStatus: PersistenceStatus
@@ -19,7 +19,7 @@ struct GymWalkLogApp: App {
     }
 
     private static func makeModelContainer(isPro: Bool) -> PersistenceResult {
-        let schema = Schema([WorkoutRecord.self])
+        let schema = Schema([WorkoutRecord.self, WorkoutPhoto.self])
         if isPro {
             let cloudConfig = ModelConfiguration(
                 schema: schema,
@@ -37,7 +37,6 @@ struct GymWalkLogApp: App {
                 )
             }
         }
-
         return makeLocalModelContainer(schema: schema)
     }
 
@@ -46,7 +45,11 @@ struct GymWalkLogApp: App {
         fallbackReason: String? = nil,
         originalError: Error? = nil
     ) -> PersistenceResult {
-        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        let config = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: false,
+            cloudKitDatabase: .none
+        )
         do {
             let container = try ModelContainer(for: schema, configurations: [config])
             return PersistenceResult(
@@ -75,7 +78,11 @@ struct GymWalkLogApp: App {
         cloudError: Error?,
         localError: Error
     ) -> PersistenceResult {
-        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        let config = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: true,
+            cloudKitDatabase: .none
+        )
         do {
             let container = try ModelContainer(for: schema, configurations: [config])
             return PersistenceResult(container: container, status: .localFallback(message: fallbackMessage))
@@ -94,12 +101,13 @@ struct GymWalkLogApp: App {
                 .environmentObject(purchaseManager)
                 .modelContainer(modelContainer)
                 .id(appSettings.isPro)
+                .preferredColorScheme(appSettings.preferredColorScheme)
                 .onChange(of: appSettings.isPro) { _, isPro in
                     let persistence = Self.makeModelContainer(isPro: isPro)
                     modelContainer = persistence.container
                     persistenceStatus = persistence.status
                 }
-                .alert("iCloud同期を開始できませんでした", isPresented: cloudFallbackAlertBinding) {
+                .alert("保存を開始できませんでした", isPresented: fallbackAlertBinding) {
                     Button("OK", role: .cancel) {
                         persistenceStatus = .localOnly
                     }
@@ -109,7 +117,7 @@ struct GymWalkLogApp: App {
         }
     }
 
-    private var cloudFallbackAlertBinding: Binding<Bool> {
+    private var fallbackAlertBinding: Binding<Bool> {
         Binding(
             get: { persistenceStatus.alertMessage != nil },
             set: { if !$0 { persistenceStatus = .localOnly } }

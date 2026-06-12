@@ -21,6 +21,11 @@ struct ProUpgradeView: View {
             }
             .background(theme.backgroundColor.ignoresSafeArea())
             .navigationBarTitleDisplayMode(.inline)
+            .task {
+                if !purchaseManager.isProductReady {
+                    await purchaseManager.loadProducts()
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("あとで") { dismiss() }
@@ -32,17 +37,15 @@ struct ProUpgradeView: View {
 
     private var heroSection: some View {
         VStack(spacing: 12) {
-            Image(systemName: "leaf.fill")
-                .font(.system(size: 48))
-                .foregroundColor(theme.primaryColor)
-                .padding(.top, 12)
+            ThemePlantIllustration(theme: theme, size: 92)
+                .padding(.top, 8)
 
-            Text("あなたの記録が、\n資産になります。")
+            Text("もっと振り返る。\nもっと自分を好きになる。")
                 .font(.title2)
                 .fontWeight(.bold)
                 .multilineTextAlignment(.center)
 
-            Text("過去を振り返ることで、\n未来の自分が変わります。")
+            Text("Proにすると、あなたの記録がもっと価値になります。")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -56,11 +59,12 @@ struct ProUpgradeView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             VStack(spacing: 10) {
-                featureRow(icon: "plus.circle", title: "31件目以降も記録", desc: "続けた分だけ記録を残せます")
-                featureRow(icon: "calendar", title: "全履歴を表示", desc: "過去の全記録を振り返れます")
-                featureRow(icon: "chart.bar.fill", title: "週・月・年の振り返りグラフ", desc: "成長の軌跡が一目でわかります")
-                featureRow(icon: "square.and.arrow.up", title: "データをCSVで書き出し", desc: "記録を手元に残せます")
-                featureRow(icon: "icloud", title: "iCloud同期（自動）", desc: "利用環境が整っていれば自動で同期します")
+                featureRow(icon: "calendar", title: "31件目以降の記録も続けられる", desc: "無料版の30件を超えても保存できます")
+                featureRow(icon: "chart.bar.fill", title: "月別・年別のレポートが見える", desc: "変化の流れをグラフで確認できます")
+                featureRow(icon: "photo.on.rectangle", title: "写真を何枚でも保存できる", desc: "トレッドミル画面もまとめて残せます")
+                featureRow(icon: "doc.text", title: "PDFとCSVで出力できる", desc: "自分の記録を手元に残せます")
+                featureRow(icon: "icloud", title: "iCloudで自動同期できる", desc: "Proなら複数端末でも同じ記録を扱えます")
+                featureRow(icon: "list.bullet.rectangle", title: "全履歴を一覧で振り返れる", desc: "長く続けた分まで見返せます")
             }
         }
         .padding(16)
@@ -110,30 +114,66 @@ struct ProUpgradeView: View {
                     .multilineTextAlignment(.center)
             }
 
-            Button {
-                Task {
-                    await purchaseManager.purchasePro()
-                    if appSettings.isPro { dismiss() }
+            if purchaseManager.isLoadingProducts && !purchaseManager.isProductReady {
+                HStack(spacing: 10) {
+                    ProgressView()
+                    Text("購入プランを確認しています…")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
                 }
-            } label: {
-                Group {
-                    if purchaseManager.isPurchasing {
-                        ProgressView()
-                            .progressViewStyle(.circular)
-                            .tint(.white)
-                    } else {
-                        Text("Proにする（買い切り \(purchaseManager.priceString)）")
-                            .font(.headline)
-                    }
-                }
-                .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
-                .background(theme.primaryColor)
+                .background(theme.cardColor)
                 .clipShape(RoundedRectangle(cornerRadius: 14))
-                .shadow(color: theme.primaryColor.opacity(0.4), radius: 8, y: 4)
+            } else if purchaseManager.isProductReady {
+                Button {
+                    Task {
+                        await purchaseManager.purchasePro()
+                        if appSettings.isPro { dismiss() }
+                    }
+                } label: {
+                    Group {
+                        if purchaseManager.isPurchasing {
+                            ProgressView()
+                                .progressViewStyle(.circular)
+                                .tint(.white)
+                        } else {
+                            Text("Proにする（買い切り \(purchaseManager.priceString)）")
+                                .font(.headline)
+                        }
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(theme.primaryColor)
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .shadow(color: theme.primaryColor.opacity(0.4), radius: 8, y: 4)
+                }
+                .disabled(purchaseManager.isPurchasing)
+            } else {
+                VStack(spacing: 10) {
+                    Text("現在、購入プランを表示できません。")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                    Text("App Storeに接続できる状態で再読み込みしてください。")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+
+                    Button {
+                        Task { await purchaseManager.loadProducts() }
+                    } label: {
+                        Text("もう一度確認する")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(theme.primaryColor)
+                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                    }
+                }
+                .frame(maxWidth: .infinity)
             }
-            .disabled(purchaseManager.isPurchasing)
 
             Button {
                 Task { await purchaseManager.restorePurchases() }

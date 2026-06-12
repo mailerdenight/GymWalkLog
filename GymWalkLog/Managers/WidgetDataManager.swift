@@ -3,7 +3,6 @@ import SwiftData
 import WidgetKit
 
 // ウィジェット用データをApp Group UserDefaultsに書き込むヘルパー
-// App Group が設定されるまでは標準UserDefaultsを使用
 enum WidgetDataManager {
     private static let defaults = UserDefaults(suiteName: "group.com.gymwalklog.app") ?? .standard
 
@@ -15,7 +14,7 @@ enum WidgetDataManager {
         let monthlyRecords = records.filter { $0.date >= startOfMonth }
         let count    = monthlyRecords.count
         let distance = monthlyRecords.reduce(0.0) { $0 + $1.distanceKm }
-        let lastDate = records.sorted { $0.date > $1.date }.first?.date
+        let lastDate = records.max(by: { $0.date < $1.date })?.date
 
         defaults.set(count,    forKey: "widget_monthlyCount")
         defaults.set(distance, forKey: "widget_monthlyDistance")
