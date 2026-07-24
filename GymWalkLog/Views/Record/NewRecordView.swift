@@ -4,6 +4,7 @@ import PhotosUI
 
 struct NewRecordView: View {
     let editingRecord: WorkoutRecord?
+    let initialDate: Date?
 
     @EnvironmentObject var appSettings: AppSettings
     @EnvironmentObject var purchaseManager: PurchaseManager
@@ -29,8 +30,9 @@ struct NewRecordView: View {
     @State private var validationMessage: String? = nil
     @State private var didLoadInitialValues = false
 
-    init(record: WorkoutRecord? = nil) {
+    init(record: WorkoutRecord? = nil, initialDate: Date? = nil) {
         self.editingRecord = record
+        self.initialDate = initialDate
     }
 
     var theme: AppTheme { appSettings.theme }
@@ -676,8 +678,16 @@ struct NewRecordView: View {
     }
 
     private func loadInitialValuesIfNeeded() {
-        guard !didLoadInitialValues, let record = editingRecord else { return }
         didLoadInitialValues = true
+
+        guard let record = editingRecord else {
+            if let initialDate {
+                let startOfDay = Calendar.current.startOfDay(for: initialDate)
+                date = startOfDay
+                endTime = startOfDay
+            }
+            return
+        }
 
         date = record.date
         endTime = record.endTime ?? record.date
@@ -692,20 +702,22 @@ struct NewRecordView: View {
     }
 
     private func replaceRecordPhotos(for record: WorkoutRecord) {
-        for photo in record.photos {
+        for photo in record.photos ?? [] {
             modelContext.delete(photo)
         }
-        record.photos.removeAll()
+        record.photos = []
         record.photoData1 = nil
         record.photoData2 = nil
         record.photoData3 = nil
 
+        var updatedPhotos: [WorkoutPhoto] = []
         for (index, image) in photoImages.enumerated() {
             guard let data = image.jpegData(compressionQuality: 0.8) else { continue }
             let photo = WorkoutPhoto(data: data, orderIndex: index, record: record)
             modelContext.insert(photo)
-            record.photos.append(photo)
+            updatedPhotos.append(photo)
         }
+        record.photos = updatedPhotos
     }
 
     // MARK: - 保存
@@ -747,12 +759,17 @@ struct NewRecordView: View {
         do {
             try modelContext.save()
         } catch {
+            modelContext.rollback()
             validationMessage = "保存できませんでした。もう一度お試しください。"
             return
         }
-        WidgetDataManager.update(records: editingRecord == nil ? [target] + records : records)
-        if appSettings.notificationSetting == .gentle {
-            NotificationManager.shared.rescheduleAbsenceReminder(lastWorkoutDate: normalizedEndTime)
+        let updatedRecords = editingRecord == nil ? [target] + records : records
+        WidgetDataManager.update(records: updatedRecords)
+        Task {
+            await NotificationManager.shared.refreshNotifications(
+                for: appSettings.notificationSetting,
+                lastWorkoutDate: updatedRecords.map(\.endTime).compactMap { $0 }.max() ?? updatedRecords.map(\.date).max()
+            )
         }
         dismiss()
     }

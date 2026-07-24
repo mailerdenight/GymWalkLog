@@ -11,7 +11,7 @@ struct MainTabView: View {
     var body: some View {
         ZStack {
             TabView(selection: $selectedTab) {
-                HomeView()
+                HomeView(selectedTab: $selectedTab)
                     .tabItem { Label("ホーム", systemImage: "house") }
                     .tag(0)
                 RecordListView()
@@ -23,11 +23,9 @@ struct MainTabView: View {
                 AlbumView()
                     .tabItem { Label("アルバム", systemImage: "photo.on.rectangle") }
                     .tag(3)
-                NavigationStack {
-                    StatsView()
-                }
-                .tabItem { Label("レポート", systemImage: "chart.bar") }
-                .tag(4)
+                StatsView()
+                    .tabItem { Label("レポート", systemImage: "chart.bar") }
+                    .tag(4)
             }
             .tint(appSettings.theme.primaryColor)
 
@@ -38,6 +36,12 @@ struct MainTabView: View {
         }
         .onAppear {
             WidgetDataManager.update(records: records)
+            Task {
+                await NotificationManager.shared.refreshNotifications(
+                    for: appSettings.notificationSetting,
+                    lastWorkoutDate: records.map(\.endTime).compactMap { $0 }.max() ?? records.map(\.date).max()
+                )
+            }
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.1) {
                 withAnimation(.easeOut(duration: 0.25)) {
                     showLaunchLogo = false

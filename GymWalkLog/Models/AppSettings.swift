@@ -30,11 +30,21 @@ enum NotificationSetting: String, CaseIterable {
 
     var displayName: String {
         switch self {
-        case .off: return "通知しない（おすすめ）"
+        case .off: return "通知しない"
         case .gentle: return "やさしく通知"
         case .daily: return "毎日リマインド"
         }
     }
+}
+
+enum CloudSyncStatus: Equatable {
+    case unavailableForFree
+    case localOnly
+    case activationPending
+    case checkingAccount
+    case syncing
+    case synced
+    case failed(message: String)
 }
 
 class AppSettings: ObservableObject {
@@ -65,6 +75,7 @@ class AppSettings: ObservableObject {
     @AppStorage("gender") var gender: String = "" {
         willSet { objectWillChange.send() }
     }
+    @Published var cloudSyncStatus: CloudSyncStatus = .localOnly
 
     var theme: AppTheme {
         get { AppTheme(rawValue: themeRaw) ?? .natural }

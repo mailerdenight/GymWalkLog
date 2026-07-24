@@ -82,13 +82,26 @@ class PurchaseManager: ObservableObject {
 
     private func checkExistingPurchases() async {
         var hasPro = false
+        var couldNotVerifyPurchase = false
         for await result in Transaction.currentEntitlements {
-            if case .verified(let transaction) = result,
-               transaction.productID == Self.proProductID {
-                hasPro = true
+            switch result {
+            case .verified(let transaction):
+                if transaction.productID == Self.proProductID {
+                    hasPro = true
+                }
+            case .unverified(let transaction, _):
+                if transaction.productID == Self.proProductID {
+                    couldNotVerifyPurchase = true
+                }
             }
         }
-        appSettings.isPro = hasPro
+        if hasPro {
+            appSettings.isPro = true
+        } else if !couldNotVerifyPurchase {
+            appSettings.isPro = false
+        } else {
+            purchaseError = "購入状態を確認できませんでした。通信状況を確認して、もう一度お試しください。"
+        }
     }
 
     private func observeTransactionUpdates() -> Task<Void, Never> {

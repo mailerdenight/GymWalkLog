@@ -10,15 +10,16 @@ struct RecordDetailView: View {
 
     @State private var showDeleteConfirm = false
     @State private var showEdit = false
+    @State private var deleteErrorMessage: String?
 
     var theme: AppTheme { appSettings.theme }
 
-    private var dateFormatter: DateFormatter {
+    private static let dateFormatter: DateFormatter = {
         let f = DateFormatter()
         f.locale = Locale(identifier: "ja_JP")
         f.dateFormat = "yyyy/M/d(EEE)"
         return f
-    }
+    }()
 
     var body: some View {
         ScrollView {
@@ -51,7 +52,7 @@ struct RecordDetailView: View {
             .padding(.top, 8)
         }
         .background(theme.backgroundColor.ignoresSafeArea())
-        .navigationTitle(dateFormatter.string(from: record.date))
+        .navigationTitle(Self.dateFormatter.string(from: record.date))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
@@ -64,10 +65,31 @@ struct RecordDetailView: View {
         }
         .confirmationDialog("この記録を削除しますか？", isPresented: $showDeleteConfirm, titleVisibility: .visible) {
             Button("削除する", role: .destructive) {
+                let remainingRecords = records.filter { $0.id != record.id }
                 modelContext.delete(record)
-                WidgetDataManager.update(records: records.filter { $0.id != record.id })
-                dismiss()
+                do {
+                    try modelContext.save()
+                    WidgetDataManager.update(records: remainingRecords)
+                    Task {
+                        await NotificationManager.shared.refreshNotifications(
+                            for: appSettings.notificationSetting,
+                            lastWorkoutDate: remainingRecords.map(\.endTime).compactMap { $0 }.max() ?? remainingRecords.map(\.date).max()
+                        )
+                    }
+                    dismiss()
+                } catch {
+                    modelContext.rollback()
+                    deleteErrorMessage = "記録を削除できませんでした。通信状況や空き容量を確認して、もう一度お試しください。"
+                }
             }
+        }
+        .alert("削除できませんでした", isPresented: Binding(
+            get: { deleteErrorMessage != nil },
+            set: { if !$0 { deleteErrorMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(deleteErrorMessage ?? "")
         }
     }
 

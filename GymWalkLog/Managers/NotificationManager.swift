@@ -3,6 +3,10 @@ import Foundation
 
 class NotificationManager {
     static let shared = NotificationManager()
+    private let weeklySummaryID = "weekly_summary"
+    private let monthlySummaryID = "monthly_summary"
+    private let absenceReminderID = "absence_reminder"
+    private let dailyReminderID = "daily_reminder"
 
     func requestAuthorization() async -> Bool {
         let center = UNUserNotificationCenter.current()
@@ -15,14 +19,14 @@ class NotificationManager {
 
     func scheduleGentleNotifications() {
         let center = UNUserNotificationCenter.current()
-        center.removeAllPendingNotificationRequests()
+        center.removePendingNotificationRequests(withIdentifiers: [weeklySummaryID, monthlySummaryID, dailyReminderID])
         scheduleWeeklySummary(center: center)
         scheduleMonthlySummary(center: center)
     }
 
     func rescheduleAbsenceReminder(lastWorkoutDate: Date) {
         let center = UNUserNotificationCenter.current()
-        center.removePendingNotificationRequests(withIdentifiers: ["absence_reminder"])
+        center.removePendingNotificationRequests(withIdentifiers: [absenceReminderID])
 
         guard let fireDate = Calendar.current.date(byAdding: .day, value: 14, to: lastWorkoutDate) else { return }
 
@@ -36,13 +40,13 @@ class NotificationManager {
         components.minute = 0
 
         let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
-        let request = UNNotificationRequest(identifier: "absence_reminder", content: content, trigger: trigger)
+        let request = UNNotificationRequest(identifier: absenceReminderID, content: content, trigger: trigger)
         center.add(request)
     }
 
     func scheduleDailyReminder() {
         let center = UNUserNotificationCenter.current()
-        center.removeAllPendingNotificationRequests()
+        center.removePendingNotificationRequests(withIdentifiers: [weeklySummaryID, monthlySummaryID, absenceReminderID, dailyReminderID])
 
         let content = UNMutableNotificationContent()
         content.title = "今日もジムへ 🌿"
@@ -54,12 +58,91 @@ class NotificationManager {
         components.minute = 0
 
         let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
-        let request = UNNotificationRequest(identifier: "daily_reminder", content: content, trigger: trigger)
+        let request = UNNotificationRequest(identifier: dailyReminderID, content: content, trigger: trigger)
         center.add(request)
     }
 
     func removeAllNotifications() {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+    }
+
+    func refreshNotifications(for setting: NotificationSetting, lastWorkoutDate: Date?) async {
+        let center = UNUserNotificationCenter.current()
+        let granted = await notificationPermissionGranted()
+
+        guard granted else {
+            removeAllNotifications()
+            return
+        }
+
+        switch setting {
+        case .off:
+            removeAllNotifications()
+        case .gentle:
+            scheduleGentleNotifications()
+            if let lastWorkoutDate {
+                rescheduleAbsenceReminder(lastWorkoutDate: lastWorkoutDate)
+            } else {
+                center.removePendingNotificationRequests(withIdentifiers: [absenceReminderID])
+            }
+        case .daily:
+            scheduleDailyReminder()
+        }
+    }
+
+    private static let nextNotificationFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "ja_JP")
+        f.dateStyle = .medium
+        f.timeStyle = .short
+        return f
+    }()
+
+    func nextPendingNotificationDescription() async -> String? {
+        let requests = await UNUserNotificationCenter.current().pendingNotificationRequests()
+        let scheduled = requests.compactMap { request -> (Date, String)? in
+            guard let trigger = request.trigger as? UNCalendarNotificationTrigger,
+                  let date = trigger.nextTriggerDate() else { return nil }
+            return (date, request.identifier)
+        }
+        .sorted { $0.0 < $1.0 }
+
+        guard let next = scheduled.first else { return nil }
+        return "\(notificationLabel(for: next.1)): \(Self.nextNotificationFormatter.string(from: next.0))"
+    }
+
+    func scheduleDebugTestNotification(after seconds: TimeInterval = 5) {
+        let center = UNUserNotificationCenter.current()
+        let content = UNMutableNotificationContent()
+        content.title = "通知テスト"
+        content.body = "ジム歩走ログの通知が届くか確認しています。"
+        content.sound = .default
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: max(seconds, 1), repeats: false)
+        let request = UNNotificationRequest(identifier: "notification_test", content: content, trigger: trigger)
+        center.add(request)
+    }
+
+    func notificationPermissionGranted() async -> Bool {
+        let settings = await UNUserNotificationCenter.current().notificationSettings()
+        return settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional
+    }
+
+    private func notificationLabel(for identifier: String) -> String {
+        switch identifier {
+        case weeklySummaryID:
+            return "週次のふり返り"
+        case monthlySummaryID:
+            return "月次のまとめ"
+        case absenceReminderID:
+            return "久しぶりのお知らせ"
+        case dailyReminderID:
+            return "毎日リマインド"
+        case "notification_test":
+            return "通知テスト"
+        default:
+            return identifier
+        }
     }
 
     private func scheduleWeeklySummary(center: UNUserNotificationCenter) {
@@ -74,7 +157,7 @@ class NotificationManager {
         components.minute = 0
 
         let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
-        let request = UNNotificationRequest(identifier: "weekly_summary", content: content, trigger: trigger)
+        let request = UNNotificationRequest(identifier: weeklySummaryID, content: content, trigger: trigger)
         center.add(request)
     }
 
@@ -90,7 +173,7 @@ class NotificationManager {
         components.minute = 0
 
         let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: true)
-        let request = UNNotificationRequest(identifier: "monthly_summary", content: content, trigger: trigger)
+        let request = UNNotificationRequest(identifier: monthlySummaryID, content: content, trigger: trigger)
         center.add(request)
     }
 }

@@ -6,9 +6,11 @@ struct HomeView: View {
     @EnvironmentObject var purchaseManager: PurchaseManager
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \WorkoutRecord.date, order: .reverse) private var records: [WorkoutRecord]
+    @Binding var selectedTab: Int
     @State private var showNewRecord = false
     @State private var showProUpgrade = false
     @State private var showSettings = false
+    @State private var activeSheet: HomeCalendarDestination?
 
     var theme: AppTheme { appSettings.theme }
 
@@ -32,19 +34,21 @@ struct HomeView: View {
         currentMonthRecords.compactMap { $0.caloriesKcal }.reduce(0, +)
     }
 
+    private var currentMonthStart: Date {
+        calendar.date(from: calendar.dateComponents([.year, .month], from: Date()))!
+    }
+
+    private var currentMonthDayCount: Int {
+        calendar.range(of: .day, in: .month, for: currentMonthStart)?.count ?? 30
+    }
+
     private var streakDays: Int {
+        let recordDates = Set(records.map { calendar.startOfDay(for: $0.date) })
         var streak = 0
         var checkDate = calendar.startOfDay(for: Date())
-        while true {
-            let hasRecord = records.contains {
-                calendar.isDate($0.date, inSameDayAs: checkDate)
-            }
-            if hasRecord {
-                streak += 1
-                checkDate = calendar.date(byAdding: .day, value: -1, to: checkDate)!
-            } else {
-                break
-            }
+        while recordDates.contains(checkDate) {
+            streak += 1
+            checkDate = calendar.date(byAdding: .day, value: -1, to: checkDate)!
         }
         return streak
     }
@@ -56,6 +60,24 @@ struct HomeView: View {
 
     private var shouldShowReturnEncouragement: Bool {
         (daysSinceLastRecord ?? 0) >= 14
+    }
+
+    private func hasRecord(on date: Date) -> Bool {
+        records.contains { calendar.isDate($0.date, inSameDayAs: date) }
+    }
+
+    private func firstRecord(on date: Date) -> WorkoutRecord? {
+        records.first { calendar.isDate($0.date, inSameDayAs: date) }
+    }
+
+    private func openDate(_ date: Date) {
+        let startOfDay = calendar.startOfDay(for: date)
+        guard startOfDay <= calendar.startOfDay(for: Date()) else { return }
+        if let record = firstRecord(on: startOfDay) {
+            activeSheet = .record(recordID: record.id)
+        } else {
+            activeSheet = .newRecord(date: startOfDay)
+        }
     }
 
     private var greetingText: String {
@@ -78,7 +100,7 @@ struct HomeView: View {
                         greetingCard
                         monthlyStatsCard
                         streakCard
-                        miniCalendarCard
+                        monthlyChallengeCard
                         recentRecordsCard
                     }
 
@@ -121,6 +143,20 @@ struct HomeView: View {
             }
             .sheet(isPresented: $showSettings) {
                 SettingsView()
+            }
+            .sheet(item: $activeSheet) { destination in
+                switch destination {
+                case .newRecord(let date):
+                    NewRecordView(initialDate: date)
+                case .record(let recordID):
+                    if let record = records.first(where: { $0.id == recordID }) {
+                        NavigationStack {
+                            RecordDetailView(record: record)
+                        }
+                    } else {
+                        ContentUnavailableView("記録が見つかりません", systemImage: "calendar.badge.exclamationmark")
+                    }
+                }
             }
         }
         .sheet(isPresented: $showProUpgrade) {
@@ -222,23 +258,7 @@ struct HomeView: View {
 
     private var monthlyStatsCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            let now = Date()
-            let month = calendar.component(.month, from: now)
-            let year = calendar.component(.year, from: now)
-            HStack {
-                Text("\(year)年\(month)月の記録")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                Spacer()
-                NavigationLink(destination: StatsView()) {
-                    HStack(spacing: 2) {
-                        Text("レポートを見る")
-                        Image(systemName: "chevron.right")
-                    }
-                    .font(.caption)
-                    .foregroundColor(theme.primaryColor)
-                }
-            }
+            monthlyStatsHeader
 
             HStack(spacing: 0) {
                 statItem(value: "\(currentMonthRecords.count)", unit: "回")
@@ -273,6 +293,46 @@ struct HomeView: View {
         .background(theme.cardColor)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
+    }
+
+    private var monthlyStatsHeader: some View {
+        let now = Date()
+        let month = calendar.component(.month, from: now)
+        let year = calendar.component(.year, from: now)
+
+        return ViewThatFits(in: .horizontal) {
+            HStack {
+                monthlyStatsTitle(year: year, month: month)
+                Spacer()
+                monthlyReportButton
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                monthlyStatsTitle(year: year, month: month)
+                monthlyReportButton
+            }
+        }
+    }
+
+    private func monthlyStatsTitle(year: Int, month: Int) -> some View {
+        Text("\(year)年\(month)月の記録")
+            .font(.subheadline)
+            .foregroundColor(.secondary)
+            .fixedSize(horizontal: true, vertical: false)
+    }
+
+    private var monthlyReportButton: some View {
+        Button {
+            selectedTab = 4
+        } label: {
+            HStack(spacing: 2) {
+                Text("レポートを見る")
+                Image(systemName: "chevron.right")
+            }
+            .font(.caption)
+            .foregroundColor(theme.primaryColor)
+            .fixedSize(horizontal: true, vertical: false)
+        }
     }
 
     private func statItem(value: String, unit: String) -> some View {
@@ -334,14 +394,64 @@ struct HomeView: View {
         .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
     }
 
-    private var miniCalendarCard: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            let now = Date()
-            let month = calendar.component(.month, from: now)
-            Text("\(month)月")
-                .font(.subheadline)
+    private var monthlyChallengeCard: some View {
+        let target = min(appSettings.monthlyGoal, currentMonthDayCount)
+
+        return VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("月間チャレンジ")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                Spacer()
+                Button {
+                    selectedTab = 2
+                } label: {
+                    HStack(spacing: 2) {
+                        Text("カレンダーを見る")
+                        Image(systemName: "chevron.right")
+                    }
+                    .font(.caption)
+                    .foregroundColor(theme.primaryColor)
+                }
+            }
+
+            Text("\(currentMonthDayCount)日以内に\(target)回ジムに行こう！")
+                .font(.caption)
                 .foregroundColor(.secondary)
-            MiniCalendarView(records: records)
+
+            let columns = Array(repeating: GridItem(.flexible(), spacing: 6), count: 7)
+            LazyVGrid(columns: columns, spacing: 6) {
+                ForEach(1...currentMonthDayCount, id: \.self) { day in
+                    let date = calendar.date(byAdding: .day, value: day - 1, to: currentMonthStart)!
+                    let done = hasRecord(on: date)
+                    let past = date <= Date()
+
+                    Button {
+                        openDate(date)
+                    } label: {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(
+                                    done ? theme.primaryColor :
+                                    past ? theme.primaryColor.opacity(0.08) : Color.clear
+                                )
+                                .frame(height: 30)
+
+                            Text("\(day)")
+                                .font(.system(size: 11, weight: done ? .bold : .regular))
+                                .foregroundColor(done ? .white : past ? .secondary : Color(.tertiaryLabel))
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(!past)
+                    .opacity(past ? 1 : 0.35)
+                }
+            }
+
+            let remaining = target - currentMonthRecords.count
+            Text(remaining > 0 ? "あと\(remaining)回で達成。がんばりすぎなくて大丈夫。" : "達成しました 🌿")
+                .font(.caption)
+                .foregroundColor(.secondary)
         }
         .padding(16)
         .background(theme.cardColor)
@@ -356,7 +466,9 @@ struct HomeView: View {
                     .font(.subheadline)
                     .fontWeight(.medium)
                 Spacer()
-                NavigationLink(destination: RecordListView()) {
+                Button {
+                    selectedTab = 1
+                } label: {
                     Text("すべて見る")
                         .font(.caption)
                         .foregroundColor(theme.primaryColor)
@@ -431,18 +543,32 @@ struct HomeView: View {
     }
 }
 
+private enum HomeCalendarDestination: Identifiable {
+    case newRecord(date: Date)
+    case record(recordID: UUID)
+
+    var id: String {
+        switch self {
+        case .newRecord(let date):
+            return "new-\(date.timeIntervalSince1970)"
+        case .record(let recordID):
+            return "record-\(recordID.uuidString)"
+        }
+    }
+}
+
 struct RecentRecordRow: View {
     @EnvironmentObject var appSettings: AppSettings
     let record: WorkoutRecord
 
     var theme: AppTheme { appSettings.theme }
 
-    private var dateFormatter: DateFormatter {
+    private static let dateFormatter: DateFormatter = {
         let f = DateFormatter()
         f.locale = Locale(identifier: "ja_JP")
         f.dateFormat = "M/d(EEE)"
         return f
-    }
+    }()
 
     var body: some View {
         HStack(spacing: 12) {
@@ -463,7 +589,7 @@ struct RecentRecordRow: View {
             }
 
             VStack(alignment: .leading, spacing: 3) {
-                Text(dateFormatter.string(from: record.date))
+                Text(Self.dateFormatter.string(from: record.date))
                     .font(.subheadline)
                     .fontWeight(.medium)
                 HStack(spacing: 8) {

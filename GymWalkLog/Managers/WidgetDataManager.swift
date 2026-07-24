@@ -18,7 +18,11 @@ enum WidgetDataManager {
 
         defaults.set(count,    forKey: "widget_monthlyCount")
         defaults.set(distance, forKey: "widget_monthlyDistance")
-        if let d = lastDate { defaults.set(d, forKey: "widget_lastRecordDate") }
+        if let d = lastDate {
+            defaults.set(d, forKey: "widget_lastRecordDate")
+        } else {
+            defaults.removeObject(forKey: "widget_lastRecordDate")
+        }
 
         WidgetCenter.shared.reloadAllTimelines()
     }

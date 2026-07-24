@@ -4,11 +4,16 @@ import SwiftData
 struct CalendarFullView: View {
     @EnvironmentObject var appSettings: AppSettings
     @Query(sort: \WorkoutRecord.date, order: .reverse) private var records: [WorkoutRecord]
-    @State private var displayMonth = Date()
+    @State private var displayMonth: Date
+    @State private var activeSheet: CalendarDestination?
 
     var theme: AppTheme { appSettings.theme }
     private let calendar = Calendar.current
     private let weekdays = ["日", "月", "火", "水", "木", "金", "土"]
+
+    init(initialMonth: Date = Date()) {
+        _displayMonth = State(initialValue: initialMonth)
+    }
 
     // MARK: - Computed
 
@@ -18,8 +23,6 @@ struct CalendarFullView: View {
         let end   = calendar.date(byAdding: .month, value: 1, to: start)!
         return records.filter { $0.date >= start && $0.date < end }
     }
-
-    private var monthlyGoal: Int { appSettings.monthlyGoal }
 
     private var daysGrid: [Date?] {
         let comps  = calendar.dateComponents([.year, .month], from: displayMonth)
@@ -37,6 +40,23 @@ struct CalendarFullView: View {
         records.contains { calendar.isDate($0.date, inSameDayAs: date) }
     }
 
+    private func firstRecord(on date: Date) -> WorkoutRecord? {
+        records.first { calendar.isDate($0.date, inSameDayAs: date) }
+    }
+
+    private func canOpenDate(_ date: Date) -> Bool {
+        calendar.startOfDay(for: date) <= calendar.startOfDay(for: Date())
+    }
+
+    private func openDate(_ date: Date) {
+        guard canOpenDate(date) else { return }
+        if let record = firstRecord(on: date) {
+            activeSheet = .record(recordID: record.id)
+        } else {
+            activeSheet = .newRecord(date: calendar.startOfDay(for: date))
+        }
+    }
+
     // MARK: - Body
 
     var body: some View {
@@ -45,8 +65,7 @@ struct CalendarFullView: View {
                 VStack(spacing: 20) {
                     monthNavigator
                     calendarGrid
-                    achievementCard
-                    challengeCard
+                    monthlyBestCard
                     Spacer(minLength: 40)
                 }
                 .padding(.horizontal, 16)
@@ -55,6 +74,20 @@ struct CalendarFullView: View {
             .background(theme.backgroundColor.ignoresSafeArea())
             .navigationTitle("カレンダー")
             .navigationBarTitleDisplayMode(.large)
+            .sheet(item: $activeSheet) { destination in
+                switch destination {
+                case .newRecord(let date):
+                    NewRecordView(initialDate: date)
+                case .record(let recordID):
+                    if let record = records.first(where: { $0.id == recordID }) {
+                        NavigationStack {
+                            RecordDetailView(record: record)
+                        }
+                    } else {
+                        ContentUnavailableView("記録が見つかりません", systemImage: "calendar.badge.exclamationmark")
+                    }
+                }
+            }
         }
     }
 
@@ -107,22 +140,29 @@ struct CalendarFullView: View {
                     if let date {
                         let hasRec   = hasRecord(on: date)
                         let isToday  = calendar.isDateInToday(date)
-                        ZStack {
-                            Circle()
-                                .fill(hasRec ? theme.primaryColor : Color.clear)
-                                .frame(width: 34, height: 34)
-                            if isToday && !hasRec {
+                        Button {
+                            openDate(date)
+                        } label: {
+                            ZStack {
                                 Circle()
-                                    .stroke(theme.primaryColor.opacity(0.5), lineWidth: 1.5)
+                                    .fill(hasRec ? theme.primaryColor : Color.clear)
                                     .frame(width: 34, height: 34)
+                                if isToday && !hasRec {
+                                    Circle()
+                                        .stroke(theme.primaryColor.opacity(0.5), lineWidth: 1.5)
+                                        .frame(width: 34, height: 34)
+                                }
+                                Text("\(calendar.component(.day, from: date))")
+                                    .font(.system(size: 13, weight: hasRec ? .semibold : .regular))
+                                    .foregroundColor(
+                                        hasRec ? .white :
+                                        isToday ? theme.primaryColor : .primary
+                                    )
                             }
-                            Text("\(calendar.component(.day, from: date))")
-                                .font(.system(size: 13, weight: hasRec ? .semibold : .regular))
-                                .foregroundColor(
-                                    hasRec ? .white :
-                                    isToday ? theme.primaryColor : .primary
-                                )
                         }
+                        .buttonStyle(.plain)
+                        .disabled(!canOpenDate(date))
+                        .opacity(canOpenDate(date) ? 1 : 0.35)
                     } else {
                         Color.clear.frame(width: 34, height: 34)
                     }
@@ -135,103 +175,140 @@ struct CalendarFullView: View {
         .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
     }
 
-    // MARK: - Achievement card
+    // MARK: - Monthly best card
 
-    private var achievementCard: some View {
-        ZStack(alignment: .trailing) {
-            VStack(alignment: .leading, spacing: 10) {
-                Text("今月の達成状況")
+    private var monthlyBestCard: some View {
+        let longestDistanceRecord = monthRecords.max { $0.distanceKm < $1.distanceKm }
+        let longestDurationRecord = monthRecords.max { $0.durationSeconds < $1.durationSeconds }
+        let fastestPaceRecord = monthRecords
+            .filter { $0.distanceKm > 0 && $0.durationSeconds > 0 }
+            .min { lhs, rhs in
+                (Double(lhs.durationSeconds) / lhs.distanceKm) < (Double(rhs.durationSeconds) / rhs.distanceKm)
+            }
+
+        return VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("月のベスト記録")
                     .font(.subheadline)
+                    .fontWeight(.medium)
+                Spacer()
+                Text(monthLabel(displayMonth))
+                    .font(.caption2)
                     .foregroundColor(.secondary)
-                HStack(alignment: .lastTextBaseline, spacing: 4) {
-                    Text("\(monthRecords.count)")
-                        .font(.system(size: 32, weight: .bold, design: .rounded))
-                        .foregroundColor(theme.primaryColor)
-                    Text("/ \(monthlyGoal)回")
+            }
+
+            if monthRecords.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("この月の記録はまだありません")
                         .font(.subheadline)
+                    Text("カレンダーの日付をタップすると、その日の記録をつけられます。")
+                        .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                ProgressView(
-                    value: Double(min(monthRecords.count, monthlyGoal)),
-                    total: Double(monthlyGoal)
-                )
-                .tint(theme.primaryColor)
-                .padding(.trailing, 70)
-                let remaining = monthlyGoal - monthRecords.count
-                if remaining > 0 {
-                    Text("あと\(remaining)回で目標達成！")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                } else {
-                    Text("目標達成！すばらしい 🎉")
-                        .font(.caption)
-                        .foregroundColor(theme.primaryColor)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, 4)
+            } else {
+                VStack(spacing: 10) {
+                    monthlyBestRow(
+                        icon: "figure.run",
+                        title: "最長距離",
+                        value: longestDistanceRecord.map { String(format: "%.2f km", $0.distanceKm) } ?? "-",
+                        record: longestDistanceRecord
+                    )
+
+                    monthlyBestRow(
+                        icon: "clock",
+                        title: "最長時間",
+                        value: longestDurationRecord?.durationFormatted ?? "-",
+                        record: longestDurationRecord
+                    )
+
+                    monthlyBestRow(
+                        icon: "speedometer",
+                        title: "最速ペース",
+                        value: fastestPaceRecord.map(formatPace(record:)) ?? "-",
+                        record: fastestPaceRecord
+                    )
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-            ThemePlantIllustration(theme: theme, size: 72)
-                .padding(.trailing, 6)
         }
         .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
         .background(theme.cardColor)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
     }
 
-    // MARK: - 30-day challenge card
-
-    private var challengeCard: some View {
-        let comps  = calendar.dateComponents([.year, .month], from: displayMonth)
-        let start  = calendar.date(from: comps)!
-        let count  = calendar.range(of: .day, in: .month, for: start)!.count
-        let target = min(monthlyGoal, count)
-
-        return VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("月間チャレンジ")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                Spacer()
-                let y = calendar.component(.year, from: displayMonth)
-                let m = calendar.component(.month, from: displayMonth)
-                Text("\(y)/\(m)/1 〜 \(y)/\(m)/\(count)")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
+    private func monthlyBestRow(icon: String, title: String, value: String, record: WorkoutRecord?) -> some View {
+        Button {
+            if let record {
+                activeSheet = .record(recordID: record.id)
             }
-            Text("\(count)日以内に\(target)回ジムに行こう！")
-                .font(.caption)
-                .foregroundColor(.secondary)
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: icon)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(theme.primaryColor)
+                    .frame(width: 28)
 
-            let cols = Array(repeating: GridItem(.flexible(), spacing: 6), count: 7)
-            LazyVGrid(columns: cols, spacing: 6) {
-                ForEach(1...count, id: \.self) { day in
-                    let date = calendar.date(byAdding: .day, value: day - 1, to: start)!
-                    let done = hasRecord(on: date)
-                    let past = date <= Date()
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 6)
-                            .fill(
-                                done ? theme.primaryColor :
-                                past ? theme.primaryColor.opacity(0.08) : Color.clear
-                            )
-                            .frame(height: 30)
-                        Text("\(day)")
-                            .font(.system(size: 11, weight: done ? .bold : .regular))
-                            .foregroundColor(done ? .white : past ? .secondary : Color(.tertiaryLabel))
-                    }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text(value)
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                }
+
+                Spacer()
+
+                if let record {
+                    Text(shortDateLabel(record.date))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+
+                    Image(systemName: "chevron.right")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
                 }
             }
-
-            let remaining = target - monthRecords.count
-            Text(remaining > 0 ? "あと\(remaining)回で達成。がんばりすぎなくて大丈夫。" : "達成しました 🌿")
-                .font(.caption)
-                .foregroundColor(.secondary)
+            .padding(.vertical, 2)
         }
-        .padding(16)
-        .background(theme.cardColor)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
+        .buttonStyle(.plain)
+        .disabled(record == nil)
+        .contentShape(Rectangle())
+    }
+
+    private func monthLabel(_ date: Date) -> String {
+        let year = calendar.component(.year, from: date)
+        let month = calendar.component(.month, from: date)
+        return "\(year)年\(month)月"
+    }
+
+    private func shortDateLabel(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ja_JP")
+        formatter.dateFormat = "M/d"
+        return formatter.string(from: date)
+    }
+
+    private func formatPace(record: WorkoutRecord) -> String {
+        let secondsPerKm = Double(record.durationSeconds) / record.distanceKm
+        let minutes = Int(secondsPerKm) / 60
+        let seconds = Int(secondsPerKm) % 60
+        return String(format: "%d:%02d /km", minutes, seconds)
+    }
+}
+
+private enum CalendarDestination: Identifiable {
+    case newRecord(date: Date)
+    case record(recordID: UUID)
+
+    var id: String {
+        switch self {
+        case .newRecord(let date):
+            return "new-\(date.timeIntervalSince1970)"
+        case .record(let recordID):
+            return "record-\(recordID.uuidString)"
+        }
     }
 }

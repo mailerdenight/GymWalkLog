@@ -15,6 +15,10 @@ struct SettingsView: View {
     @State private var weightText = ""
     @State private var showCalorieInfo = false
     @State private var exportErrorMessage: String? = nil
+    @State private var nextNotificationDescription: String? = nil
+    @State private var notificationTestMessage: String? = nil
+    @State private var notificationPermissionMessage: String? = nil
+    @State private var dataErrorMessage: String? = nil
 
     var theme: AppTheme { appSettings.theme }
 
@@ -32,6 +36,7 @@ struct SettingsView: View {
             .onAppear {
                 treadmillProfile = TreadmillProfile.load()
                 weightText = appSettings.bodyWeightKg == 65.0 ? "" : String(format: "%.1f", appSettings.bodyWeightKg)
+                refreshNotificationPreview()
             }
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
@@ -55,12 +60,48 @@ struct SettingsView: View {
         } message: {
             Text(exportErrorMessage ?? "")
         }
+        .alert("通知テスト", isPresented: Binding(
+            get: { notificationTestMessage != nil },
+            set: { if !$0 { notificationTestMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(notificationTestMessage ?? "")
+        }
+        .alert("通知を有効にできませんでした", isPresented: Binding(
+            get: { notificationPermissionMessage != nil },
+            set: { if !$0 { notificationPermissionMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(notificationPermissionMessage ?? "")
+        }
+        .alert("削除できませんでした", isPresented: Binding(
+            get: { dataErrorMessage != nil },
+            set: { if !$0 { dataErrorMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(dataErrorMessage ?? "")
+        }
         .confirmationDialog("全データを削除しますか？", isPresented: $showDeleteConfirm, titleVisibility: .visible) {
             Button("すべて削除", role: .destructive) {
                 for record in allRecords {
                     modelContext.delete(record)
                 }
-                WidgetDataManager.update(records: [])
+                do {
+                    try modelContext.save()
+                    WidgetDataManager.update(records: [])
+                    Task {
+                        await NotificationManager.shared.refreshNotifications(
+                            for: appSettings.notificationSetting,
+                            lastWorkoutDate: nil
+                        )
+                    }
+                } catch {
+                    modelContext.rollback()
+                    dataErrorMessage = "すべての記録を削除できませんでした。通信状況や空き容量を確認して、もう一度お試しください。"
+                }
             }
         }
         .sheet(isPresented: $showCalorieInfo) {
@@ -255,9 +296,36 @@ struct SettingsView: View {
                 }
                 .contentShape(Rectangle())
                 .onTapGesture {
-                    appSettings.notificationSetting = setting
                     handleNotificationChange(setting)
                 }
+            }
+
+            if appSettings.notificationSetting != .off {
+                HStack(alignment: .top, spacing: 10) {
+                    Image(systemName: "bell.badge")
+                        .foregroundColor(theme.primaryColor)
+                        .frame(width: 20)
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("次回通知予定")
+                            .font(.subheadline)
+                        Text(nextNotificationDescription ?? "確認中…")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+
+                Button {
+                    sendNotificationTest()
+                } label: {
+                    HStack {
+                        Image(systemName: "paperplane")
+                            .foregroundColor(theme.primaryColor)
+                        Text("5秒後に通知テストを送る")
+                            .font(.subheadline)
+                            .foregroundColor(.primary)
+                    }
+                }
+                .buttonStyle(.plain)
             }
         }
     }
@@ -266,16 +334,50 @@ struct SettingsView: View {
         let nm = NotificationManager.shared
         switch setting {
         case .off:
+            appSettings.notificationSetting = .off
             nm.removeAllNotifications()
-        case .gentle:
+            nextNotificationDescription = "通知はオフです"
+        case .gentle, .daily:
             Task {
                 let granted = await nm.requestAuthorization()
-                if granted { nm.scheduleGentleNotifications() }
+                if granted {
+                    await MainActor.run {
+                        appSettings.notificationSetting = setting
+                    }
+                    await nm.refreshNotifications(for: setting, lastWorkoutDate: allRecords.map(\.endTime).compactMap { $0 }.max() ?? allRecords.map(\.date).max())
+                    await MainActor.run { refreshNotificationPreview() }
+                } else {
+                    await MainActor.run {
+                        appSettings.notificationSetting = .off
+                        nextNotificationDescription = "通知はオフです"
+                        notificationPermissionMessage = "通知が許可されていません。iPhoneの設定アプリでこのアプリの通知を許可してから、もう一度お試しください。"
+                    }
+                }
             }
-        case .daily:
-            Task {
-                let granted = await nm.requestAuthorization()
-                if granted { nm.scheduleDailyReminder() }
+        }
+    }
+
+    private func refreshNotificationPreview() {
+        Task {
+            let description = await NotificationManager.shared.nextPendingNotificationDescription()
+            await MainActor.run {
+                nextNotificationDescription = description ?? "まだ通知は予約されていません"
+            }
+        }
+    }
+
+    private func sendNotificationTest() {
+        Task {
+            let granted = await NotificationManager.shared.notificationPermissionGranted()
+            guard granted else {
+                await MainActor.run {
+                    notificationTestMessage = "通知が許可されていません。iPhoneの設定で通知を許可してからお試しください。"
+                }
+                return
+            }
+            NotificationManager.shared.scheduleDebugTestNotification()
+            await MainActor.run {
+                notificationTestMessage = "5秒後にテスト通知を送ります。"
             }
         }
     }
@@ -292,6 +394,35 @@ struct SettingsView: View {
                     Text("✓")
                         .foregroundColor(theme.primaryColor)
                 }
+
+                HStack(alignment: .top, spacing: 12) {
+                    Image(systemName: cloudSyncIconName)
+                        .foregroundColor(cloudSyncTintColor)
+                        .frame(width: 20)
+
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("iCloud同期")
+                            .font(.subheadline)
+                        Text(cloudSyncPrimaryText)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        if let detail = cloudSyncDetailText {
+                            Text(detail)
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    Spacer()
+                    Text(cloudSyncBadgeText)
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(cloudSyncTintColor.opacity(0.15))
+                        .foregroundColor(cloudSyncTintColor)
+                        .clipShape(Capsule())
+                }
+
             } else {
                 Button {
                     showProUpgrade = true
@@ -324,6 +455,88 @@ struct SettingsView: View {
             }
         } header: {
             Text("Pro")
+        } footer: {
+            if !appSettings.isPro {
+                Text("iCloud同期はProで利用できます。購入後は、この画面で同期状態を確認できます。")
+                    .font(.caption2)
+            }
+        }
+    }
+
+    private var cloudSyncBadgeText: String {
+        switch appSettings.cloudSyncStatus {
+        case .unavailableForFree:
+            return "未対応"
+        case .localOnly:
+            return "端末内"
+        case .activationPending:
+            return "次回開始"
+        case .checkingAccount:
+            return "確認中"
+        case .syncing:
+            return "同期中"
+        case .synced:
+            return "有効"
+        case .failed:
+            return "一時停止"
+        }
+    }
+
+    private var cloudSyncPrimaryText: String {
+        switch appSettings.cloudSyncStatus {
+        case .unavailableForFree:
+            return "無料版では端末内保存のみです。"
+        case .localOnly:
+            return "現在はこの端末内に保存しています。"
+        case .activationPending:
+            return "次回のアプリ起動時からiCloud同期を開始します。"
+        case .checkingAccount:
+            return "iCloudの利用状態を確認しています。"
+        case .syncing:
+            return "iCloudと記録を同期しています。"
+        case .synced:
+            return "iCloud同期が有効です。"
+        case .failed:
+            return "iCloud同期を一時停止しています。"
+        }
+    }
+
+    private var cloudSyncDetailText: String? {
+        switch appSettings.cloudSyncStatus {
+        case .failed(let message):
+            return message
+        case .synced:
+            return "同じApple Accountの端末への反映には少し時間がかかることがあります。"
+        case .activationPending:
+            return "購入・復元した直後も、現在の記録は端末内に安全に保存されます。"
+        case .checkingAccount, .syncing:
+            return "記録はこの端末にも保存されています。反映には少し時間がかかることがあります。"
+        case .unavailableForFree, .localOnly:
+            return nil
+        }
+    }
+
+    private var cloudSyncTintColor: Color {
+        switch appSettings.cloudSyncStatus {
+        case .synced:
+            return theme.primaryColor
+        case .activationPending, .checkingAccount, .syncing, .failed:
+            return .orange
+        case .unavailableForFree, .localOnly:
+            return .secondary
+        }
+    }
+
+    private var cloudSyncIconName: String {
+        switch appSettings.cloudSyncStatus {
+        case .synced:
+            return "icloud.fill"
+        case .activationPending, .checkingAccount, .syncing:
+            return "arrow.triangle.2.circlepath.icloud"
+        case .failed:
+            return "exclamationmark.icloud"
+        case .unavailableForFree, .localOnly:
+            return "icloud.slash"
         }
     }
 
@@ -432,7 +645,7 @@ struct SettingsView: View {
                 Text("バージョン")
                     .font(.subheadline)
                 Spacer()
-                Text("1.0.0")
+                Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }

@@ -117,15 +117,21 @@ struct AlbumView: View {
                                 ForEach(section.items.prefix(12)) { item in
                                     NavigationLink(destination: RecordDetailView(record: item.record)) {
                                         VStack(spacing: 6) {
-                                            Image(uiImage: item.image)
-                                                .resizable()
-                                                .scaledToFill()
-                                                .frame(width: 78, height: 78)
-                                                .clipShape(RoundedRectangle(cornerRadius: 10))
-                                                .overlay(
-                                                    RoundedRectangle(cornerRadius: 10)
-                                                        .stroke(Color.black.opacity(0.04), lineWidth: 1)
-                                                )
+                                            Group {
+                                                if let uiImage = UIImage(data: item.imageData) {
+                                                    Image(uiImage: uiImage)
+                                                        .resizable()
+                                                        .scaledToFill()
+                                                } else {
+                                                    Color.gray.opacity(0.15)
+                                                }
+                                            }
+                                            .frame(width: 78, height: 78)
+                                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 10)
+                                                    .stroke(Color.black.opacity(0.04), lineWidth: 1)
+                                            )
                                             Text(item.shortDate)
                                                 .font(.caption2)
                                                 .foregroundColor(.primary)
@@ -154,11 +160,10 @@ struct AlbumView: View {
         return sortedRecords.flatMap { record -> [AlbumPhotoItem] in
             record.photoDataList
                 .enumerated()
-                .compactMap { index, data -> AlbumPhotoItem? in
-                    guard let image = UIImage(data: data) else { return nil }
-                    return AlbumPhotoItem(
+                .map { index, data in
+                    AlbumPhotoItem(
                         id: "\(record.id.uuidString)-\(index)",
-                        image: image,
+                        imageData: data,
                         record: record,
                         date: record.date
                     )
@@ -188,15 +193,19 @@ private struct AlbumMonthSection: Identifiable {
 
 private struct AlbumPhotoItem: Identifiable {
     let id: String
-    let image: UIImage
+    let imageData: Data
     let record: WorkoutRecord
     let date: Date
 
+    private static let dateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "ja_JP")
+        f.dateFormat = "M/d"
+        return f
+    }()
+
     var shortDate: String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ja_JP")
-        formatter.dateFormat = "M/d"
-        return formatter.string(from: date)
+        Self.dateFormatter.string(from: date)
     }
 }
 
@@ -218,12 +227,18 @@ private struct AlbumMonthView: View {
                 ForEach(section.items) { item in
                     NavigationLink(destination: RecordDetailView(record: item.record)) {
                         VStack(spacing: 6) {
-                            Image(uiImage: item.image)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(height: 106)
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
-                                .clipped()
+                            Group {
+                                if let uiImage = UIImage(data: item.imageData) {
+                                    Image(uiImage: uiImage)
+                                        .resizable()
+                                        .scaledToFill()
+                                } else {
+                                    Color.gray.opacity(0.15)
+                                }
+                            }
+                            .frame(height: 106)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .clipped()
                             Text(item.shortDate)
                                 .font(.caption2)
                                 .foregroundColor(.secondary)

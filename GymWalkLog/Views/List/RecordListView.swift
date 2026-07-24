@@ -3,11 +3,11 @@ import SwiftData
 
 struct RecordListView: View {
     @EnvironmentObject var appSettings: AppSettings
-    @EnvironmentObject var purchaseManager: PurchaseManager
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \WorkoutRecord.date, order: .reverse) private var allRecords: [WorkoutRecord]
     @State private var showProUpgrade = false
     @State private var sortOrder: RecordSortOrder = .newest
+    @State private var deleteErrorMessage: String?
 
     var theme: AppTheme { appSettings.theme }
 
@@ -71,6 +71,14 @@ struct RecordListView: View {
         .sheet(isPresented: $showProUpgrade) {
             ProUpgradeView()
         }
+        .alert("削除できませんでした", isPresented: Binding(
+            get: { deleteErrorMessage != nil },
+            set: { if !$0 { deleteErrorMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(deleteErrorMessage ?? "")
+        }
     }
 
     private var recordsList: some View {
@@ -111,12 +119,24 @@ struct RecordListView: View {
                         }
                     }
                     .onDelete { indexSet in
+                        let deletedIDs = Set(indexSet.map { monthRecords[$0].id })
+                        let remainingRecords = allRecords.filter { !deletedIDs.contains($0.id) }
                         for index in indexSet {
                             modelContext.delete(monthRecords[index])
                         }
-                        WidgetDataManager.update(records: allRecords.filter { record in
-                            !indexSet.contains { monthRecords[$0].id == record.id }
-                        })
+                        do {
+                            try modelContext.save()
+                            WidgetDataManager.update(records: remainingRecords)
+                            Task {
+                                await NotificationManager.shared.refreshNotifications(
+                                    for: appSettings.notificationSetting,
+                                    lastWorkoutDate: remainingRecords.map(\.endTime).compactMap { $0 }.max() ?? remainingRecords.map(\.date).max()
+                                )
+                            }
+                        } catch {
+                            modelContext.rollback()
+                            deleteErrorMessage = "記録を削除できませんでした。通信状況や空き容量を確認して、もう一度お試しください。"
+                        }
                     }
                 }
             }
@@ -160,12 +180,12 @@ struct RecordListRow: View {
 
     var theme: AppTheme { appSettings.theme }
 
-    private var dateFormatter: DateFormatter {
+    private static let dateFormatter: DateFormatter = {
         let f = DateFormatter()
         f.locale = Locale(identifier: "ja_JP")
         f.dateFormat = "M/d(EEE)"
         return f
-    }
+    }()
 
     var body: some View {
         HStack(spacing: 12) {
@@ -187,7 +207,7 @@ struct RecordListRow: View {
             }
 
             VStack(alignment: .leading, spacing: 6) {
-                Text(dateFormatter.string(from: record.date))
+                Text(Self.dateFormatter.string(from: record.date))
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundColor(theme.primaryColor)
