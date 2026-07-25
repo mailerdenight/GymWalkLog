@@ -2,7 +2,7 @@
 
 ## Files to use
 
-- IAP review screenshot: [AppStoreAssets/Screenshots/iap-review/pro-review-screenshot-ipad.png](/Users/ac/Documents/ジム歩走ログ/AppStoreAssets/Screenshots/iap-review/pro-review-screenshot-ipad.png)
+- IAP review screenshot: [pro-review-screenshot-ipad.png](../AppStoreAssets/Screenshots/iap-review/pro-review-screenshot-ipad.png)
 - Product ID in app: `com.gymwalklog.app.pro`
 - Product type: `Non-Consumable`
 
