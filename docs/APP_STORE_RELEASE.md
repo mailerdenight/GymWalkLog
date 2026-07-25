@@ -68,12 +68,12 @@
 
 ## スクリーンショット候補
 
-- [197AEA11-479B-4514-9846-6CC2F96FAEEE.png](/Users/ac/Documents/ジム歩走ログ/screenshots/appstore/197AEA11-479B-4514-9846-6CC2F96FAEEE.png)
-- [29FEB34B-55E1-420F-9C54-2A8AC0DAD6F1.png](/Users/ac/Documents/ジム歩走ログ/screenshots/appstore/29FEB34B-55E1-420F-9C54-2A8AC0DAD6F1.png)
-- [43E55F68-DF60-4254-A963-0AFF2872E8AA.png](/Users/ac/Documents/ジム歩走ログ/screenshots/appstore/43E55F68-DF60-4254-A963-0AFF2872E8AA.png)
-- [450DEA2E-694F-4372-9D73-FEDE6B9B3545.png](/Users/ac/Documents/ジム歩走ログ/screenshots/appstore/450DEA2E-694F-4372-9D73-FEDE6B9B3545.png)
-- [9E18803E-A11F-4C3C-B306-60CACC0E29B4.png](/Users/ac/Documents/ジム歩走ログ/screenshots/appstore/9E18803E-A11F-4C3C-B306-60CACC0E29B4.png)
-- [DA7BF675-5D69-4CD7-B68A-B5A034012C0D.png](/Users/ac/Documents/ジム歩走ログ/screenshots/appstore/DA7BF675-5D69-4CD7-B68A-B5A034012C0D.png)
+- [197AEA11-479B-4514-9846-6CC2F96FAEEE.png](/Users/ac/Documents/ジム歩走ログ/AppStoreAssets/Screenshots/appstore/197AEA11-479B-4514-9846-6CC2F96FAEEE.png)
+- [29FEB34B-55E1-420F-9C54-2A8AC0DAD6F1.png](/Users/ac/Documents/ジム歩走ログ/AppStoreAssets/Screenshots/appstore/29FEB34B-55E1-420F-9C54-2A8AC0DAD6F1.png)
+- [43E55F68-DF60-4254-A963-0AFF2872E8AA.png](/Users/ac/Documents/ジム歩走ログ/AppStoreAssets/Screenshots/appstore/43E55F68-DF60-4254-A963-0AFF2872E8AA.png)
+- [450DEA2E-694F-4372-9D73-FEDE6B9B3545.png](/Users/ac/Documents/ジム歩走ログ/AppStoreAssets/Screenshots/appstore/450DEA2E-694F-4372-9D73-FEDE6B9B3545.png)
+- [9E18803E-A11F-4C3C-B306-60CACC0E29B4.png](/Users/ac/Documents/ジム歩走ログ/AppStoreAssets/Screenshots/appstore/9E18803E-A11F-4C3C-B306-60CACC0E29B4.png)
+- [DA7BF675-5D69-4CD7-B68A-B5A034012C0D.png](/Users/ac/Documents/ジム歩走ログ/AppStoreAssets/Screenshots/appstore/DA7BF675-5D69-4CD7-B68A-B5A034012C0D.png)
 
 ## 審査メモ案
 

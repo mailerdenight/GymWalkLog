@@ -2,7 +2,7 @@ import AppKit
 import Foundation
 
 let root = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-let outputDir = root.appendingPathComponent("screenshots/iap-review", isDirectory: true)
+let outputDir = root.appendingPathComponent("AppStoreAssets/Screenshots/iap-review", isDirectory: true)
 let outputURL = outputDir.appendingPathComponent("pro-review-screenshot-ipad.png")
 let logoURL = root.appendingPathComponent("GymWalkLog/Assets.xcassets/AppLogo.imageset/AppLogo.png")
 

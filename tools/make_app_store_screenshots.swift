@@ -15,8 +15,8 @@ struct ShotSpec {
 }
 
 let root = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-let inputDir = root.appendingPathComponent("screenshots/appstore")
-let outputDir = root.appendingPathComponent("screenshots/appstore-polished")
+let inputDir = root.appendingPathComponent("AppStoreAssets/Screenshots/appstore")
+let outputDir = root.appendingPathComponent("AppStoreAssets/Screenshots/appstore-polished")
 try FileManager.default.createDirectory(at: outputDir, withIntermediateDirectories: true)
 
 let specs: [ShotSpec] = [
