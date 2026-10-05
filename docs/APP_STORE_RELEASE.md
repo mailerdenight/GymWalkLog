@@ -62,8 +62,8 @@
 
 ## サポート・プライバシー
 
-- サポートURL: `https://mailerdenight.github.io/GymWalkLog/support.html`
-- プライバシーポリシーURL: `https://mailerdenight.github.io/GymWalkLog/privacy.html`
+- サポートURL: `https://mailerdenight.github.io/gym-walk-log/support/`
+- プライバシーポリシーURL: `https://mailerdenight.github.io/gym-walk-log/privacy/`
 - サポートメール: `mailerdenight@gmail.com`
 
 ## スクリーンショット候補
@@ -86,8 +86,8 @@
 ## リリース前チェック
 
 - [ ] `mailerdenight@gmail.com` が実際に受信できる
-- [ ] `https://mailerdenight.github.io/GymWalkLog/support.html` を公開済み
-- [ ] `https://mailerdenight.github.io/GymWalkLog/privacy.html` を公開済み
+- [ ] `https://mailerdenight.github.io/gym-walk-log/support/` を公開済み
+- [ ] `https://mailerdenight.github.io/gym-walk-log/privacy/` を公開済み
 - [ ] App Store Connect の `Pricing and Availability` で App本体が `Free` になっている
 - [ ] App Store Connect の年齢区分とプライバシー回答を入力済み
 - [ ] アプリ内課金 `Pro` の商品情報が App Store Connect 側で審査提出可能
