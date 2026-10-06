@@ -1,6 +1,6 @@
 # ジム歩走ログ App Store 公開メモ
 
-最終更新: 2026-07-25
+最終更新: 2026-10-06（JST。GitHub mainのビルド設定・公開ページのソースとURLを確認）
 
 ## 現在のビルド
 
@@ -11,7 +11,7 @@
 - App本体の価格: `Free` にする
 - 追加課金: App内課金 `Pro`（非消耗型）で設定する
 - 最新アーカイブ: [/private/tmp/GymWalkLog-1.3-6-final.xcarchive](/private/tmp/GymWalkLog-1.3-6-final.xcarchive)
-- App Store Connect: 1.2は配信から削除済み。1.3（ビルド6）は審査待ちで、優先審査も受付済み
+- App Store Connect（2026-07-25時点の履歴）: 1.2は配信から削除済み。1.3（ビルド6）は審査待ちで、優先審査も受付済み。現在の審査・配信状態はGitHubでは確認できません。
 
 ## 申請用テキスト案
 
@@ -65,6 +65,7 @@
 - サポートURL: `https://mailerdenight.github.io/gym-walk-log/support/`
 - プライバシーポリシーURL: `https://mailerdenight.github.io/gym-walk-log/privacy/`
 - サポートメール: `mailerdenight@gmail.com`
+- 2026-10-06（JST）確認: `mailerdenight/mailerdenight.github.io` の main に `gym-walk-log/index.html`、`gym-walk-log/support/index.html`、`gym-walk-log/privacy/index.html` が存在し、ルート `index.html` に公式サイト・上記URL・App Store ID `6776317612` へのリンクがある。公開URLへのアクセス確認やApp Store Connectの状態確認とは別。
 
 ## スクリーンショット候補
 
@@ -86,8 +87,8 @@
 ## リリース前チェック
 
 - [ ] `mailerdenight@gmail.com` が実際に受信できる
-- [ ] `https://mailerdenight.github.io/gym-walk-log/support/` を公開済み
-- [ ] `https://mailerdenight.github.io/gym-walk-log/privacy/` を公開済み
+- [x] サポートURL `https://mailerdenight.github.io/gym-walk-log/support/` に対応するソースがGitHub mainに存在することを確認（2026-10-06 JST）
+- [x] プライバシーポリシーURL `https://mailerdenight.github.io/gym-walk-log/privacy/` に対応するソースがGitHub mainに存在することを確認（2026-10-06 JST）
 - [ ] App Store Connect の `Pricing and Availability` で App本体が `Free` になっている
 - [ ] App Store Connect の年齢区分とプライバシー回答を入力済み
 - [ ] アプリ内課金 `Pro` の商品情報が App Store Connect 側で審査提出可能
